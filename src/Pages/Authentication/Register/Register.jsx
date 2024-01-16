@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import useAuth from "../../../Hooks/useAuth";
 import { axiosPublic } from "../../../Hooks/useAxiosPublic";
 import toast from "react-hot-toast";
+import Spinner from "../../../components/Spinner";
 
 const Register = () => {
   const { createUser, updateUser } = useAuth();
@@ -14,6 +15,7 @@ const Register = () => {
   const [divisionOption, setDivisionOption] = useState(null);
   const [districtOption, setDistrictOption] = useState(null);
   const [districtOptions, setDistrictOptions] = useState([]);
+  const [loading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -79,7 +81,7 @@ const Register = () => {
   ];
 
   const onSubmit = async (data) => {
-    console.log(data);
+    setLoading(true);
 
     const photoFile = data.photo[0];
     const photoData = await imageUpload(photoFile);
@@ -93,30 +95,41 @@ const Register = () => {
       division: districtOption,
       district: districtOption,
       password: data.password,
-      role: 'donor',
-      status: 'active'
+      role: "donor",
+      status: "active",
     };
 
-    // create user 
+    // create user
     createUser(data.email, data.password)
-    .then(result => {
-      if(result.user){
-        updateUser(data.name, image)
-        .then(res => {
-          axiosPublic.post('/donors', user)
-          .then(res => {
-            if(res.data.insertedId){
-              toast("Congrats! you become a donor", {
-                icon: '👏',
-              });
-            }
-          })
-        })
-      }
-    })
-
+      .then((result) => {
+        if (result.user) {
+          updateUser(data.name, image).then(() => {
+            axiosPublic.post("/donors", user).then((res) => {
+              if (res.data.insertedId) {
+                setLoading(false);
+                toast("Congrats! you become a donor", {
+                  icon: "👏",
+                });
+              }
+            });
+          });
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.log(error.message);
+        if (error.message === "Firebase: Error (auth/email-already-in-use).") {
+          toast.error("Already have account with this email");
+        } else {
+          toast.error("Something is wrong");
+        }
+      });
   };
 
+  console.log(loading);
+  if (loading) {
+    return <Spinner />;
+  }
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center">
@@ -166,7 +179,11 @@ const Register = () => {
               <label className="label">
                 <span className="label-text">Blood Group</span>
               </label>
-              <Select required onChange={setBloodOption} options={bloodOptions} />
+              <Select
+                required
+                onChange={setBloodOption}
+                options={bloodOptions}
+              />
             </div>
             <div className="form-control w-full">
               <label className="label">
@@ -183,7 +200,11 @@ const Register = () => {
               <label className="label">
                 <span className="label-text">District</span>
               </label>
-              <Select required onChange={setDistrictOption} options={districtOptions} />
+              <Select
+                required
+                onChange={setDistrictOption}
+                options={districtOptions}
+              />
             </div>
           </div>
           <div className="md:flex gap-5">
@@ -196,7 +217,11 @@ const Register = () => {
                 placeholder="Password"
                 className="input input-bordered"
                 {...register("password", {
-                  required: "Password is required", minLength: {value: 6, message: 'Password must be at least 6 characters long'}
+                  required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Password must be at least 6 characters long",
+                  },
                 })}
               />
             </div>

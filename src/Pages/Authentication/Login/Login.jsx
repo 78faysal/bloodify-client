@@ -1,9 +1,49 @@
+import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import useAuth from "../../../Hooks/useAuth";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import Spinner from "../../../components/Spinner";
 
 const Login = () => {
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
+    const {logInUser} = useAuth();
+    const [loading, setLoading] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    // formState: { errors },
+  } = useForm();
+
+  const onSubmit = (data) => {
+    setLoading(true);
+    console.log(data);
+
+    // log in user
+    logInUser(data.email, data.password)
+    .then( async result => {
+        const user = await result.user;
+        if(user){
+            setLoading(false)
+            toast.success('Successfully logged in!')
+        }
+    })
+    .catch(error => {
+        setLoading(false);
+        console.log(error.message);
+        if(error.message === 'Firebase: Error (auth/invalid-credential).'){
+            toast.error('Invalid credential! try again')
+        }
+        else{
+            toast.error('Something is wrong')
+        }
+    })
   };
+
+  console.log(loading);
+  if(loading){
+    return <Spinner />
+  }
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center">
       <div className="hero-content flex-col">
@@ -12,30 +52,33 @@ const Login = () => {
         </div>
       </div>
       <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100 mx-auto">
-        <form className="card-body" onSubmit={handleFormSubmit}>
+        <form className="card-body" onSubmit={handleSubmit(onSubmit)}>
           <div className="form-control w-full">
             <label className="label">
               <span className="label-text">Email</span>
             </label>
             <input
-              name="email"
+              {...register("email")}
               type="email"
               placeholder="Email"
               className="input input-bordered"
               required
             />
           </div>
-          <div className="form-control w-full">
-            <label className="label">
-              <span className="label-text">Password</span>
-            </label>
-            <input
-              name="password"
-              type="password"
-              placeholder="Password"
-              className="input input-bordered"
-              required
-            />
+          <div className="md:flex gap-5">
+            <div className="form-control w-full">
+              <label className="label">
+                <span className="label-text">Password</span>
+              </label>
+              <input
+                type="password"
+                placeholder="Password"
+                className="input input-bordered"
+                {...register("password", {
+                  required: "Password is required"
+                })}
+              />
+            </div>
           </div>
           <div className="form-control mt-6">
             <button className="btn btn-primary">Login</button>
