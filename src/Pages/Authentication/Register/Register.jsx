@@ -4,13 +4,16 @@ import Select from "react-select";
 import imageUpload from "../../../Hooks/imageUpload";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import useAuth from "../../../Hooks/useAuth";
+import { axiosPublic } from "../../../Hooks/useAxiosPublic";
+import toast from "react-hot-toast";
 
 const Register = () => {
+  const { createUser, updateUser } = useAuth();
   const [bloodOption, setBloodOption] = useState(null);
   const [divisionOption, setDivisionOption] = useState(null);
   const [districtOption, setDistrictOption] = useState(null);
   const [districtOptions, setDistrictOptions] = useState([]);
-  const [error, setError] = useState(null);
   const {
     register,
     handleSubmit,
@@ -27,7 +30,7 @@ const Register = () => {
     });
   }, [divisionOption]);
 
-  console.log(districtOptions);
+  // console.log(districtOptions);
 
   const bloodOptions = [
     { value: "o+", label: "O+" },
@@ -76,17 +79,45 @@ const Register = () => {
   ];
 
   const onSubmit = async (data) => {
-    // e.preventDefault();
-    console.log(data.password, data.confirm_password);
+    console.log(data);
 
-    // const photoFile = data.photo[0];
-    // const photoData = await imageUpload(photoFile);
-    // const avater = photoData.display_url;
+    const photoFile = data.photo[0];
+    const photoData = await imageUpload(photoFile);
+    const image = photoData.display_url;
 
-    
+    const user = {
+      name: data.name,
+      email: data.email,
+      image: image,
+      blood: bloodOption,
+      division: districtOption,
+      district: districtOption,
+      password: data.password,
+      role: 'donor',
+      status: 'active'
+    };
+
+    // create user 
+    createUser(data.email, data.password)
+    .then(result => {
+      if(result.user){
+        updateUser(data.name, image)
+        .then(res => {
+          axiosPublic.post('/donors', user)
+          .then(res => {
+            if(res.data.insertedId){
+              toast("Congrats! you become a donor", {
+                icon: '👏',
+              });
+            }
+          })
+        })
+      }
+    })
+
   };
 
-  //   console.log(selectedBloodOption, divisionOption, districtOption);
+
   return (
     <div className="min-h-screen flex flex-col justify-center items-center">
       <div className="hero-content flex-col">
@@ -135,13 +166,14 @@ const Register = () => {
               <label className="label">
                 <span className="label-text">Blood Group</span>
               </label>
-              <Select onChange={setBloodOption} options={bloodOptions} />
+              <Select required onChange={setBloodOption} options={bloodOptions} />
             </div>
             <div className="form-control w-full">
               <label className="label">
                 <span className="label-text">Division</span>
               </label>
               <Select
+                required
                 className="w-full"
                 onChange={setDivisionOption}
                 options={divisionOptions}
@@ -151,7 +183,7 @@ const Register = () => {
               <label className="label">
                 <span className="label-text">District</span>
               </label>
-              <Select onChange={setDistrictOption} options={districtOptions} />
+              <Select required onChange={setDistrictOption} options={districtOptions} />
             </div>
           </div>
           <div className="md:flex gap-5">
@@ -164,7 +196,7 @@ const Register = () => {
                 placeholder="Password"
                 className="input input-bordered"
                 {...register("password", {
-                  required: "Password is required",
+                  required: "Password is required", minLength: {value: 6, message: 'Password must be at least 6 characters long'}
                 })}
               />
             </div>
@@ -187,6 +219,9 @@ const Register = () => {
               />
             </div>
           </div>
+          {errors.password && (
+            <p className="text-red-500">{errors.password.message}</p>
+          )}
           {errors.confirm_password && (
             <p className="text-red-500">{errors.confirm_password.message}</p>
           )}
