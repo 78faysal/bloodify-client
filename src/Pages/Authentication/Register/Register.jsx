@@ -91,9 +91,9 @@ const Register = () => {
       name: data.name,
       email: data.email,
       image: image,
-      blood: bloodOption,
-      division: districtOption,
-      district: districtOption,
+      blood: bloodOption.value,
+      division: districtOption.division_name,
+      district: districtOption.value,
       password: data.password,
       role: "donor",
       status: "active",
@@ -103,15 +103,16 @@ const Register = () => {
     createUser(data.email, data.password)
       .then((result) => {
         if (result.user) {
-          updateUser(data.name, image).then(() => {
-            axiosPublic.post("/donors", user).then((res) => {
-              if (res.data.insertedId) {
-                setLoading(false);
-                toast("Congrats! you become a donor", {
-                  icon: "👏",
-                });
-              }
-            });
+          axiosPublic.post("/users", user).then((res) => {
+            if (res.data.insertedId) {
+              setLoading(false);
+              toast("Congrats! you become a donor", {
+                icon: "👏",
+              });
+            }
+          });
+          updateUser(data.name, image)
+          .then(() => {
           });
         }
       })

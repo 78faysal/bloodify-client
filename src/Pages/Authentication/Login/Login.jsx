@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import useAuth from "../../../Hooks/useAuth";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -8,11 +8,15 @@ import Spinner from "../../../components/Spinner";
 const Login = () => {
     const {logInUser} = useAuth();
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+    const location = useLocation();
   const {
     register,
     handleSubmit,
     // formState: { errors },
   } = useForm();
+
+  const from = location?.state?.from?.pathname || '/';
 
   const onSubmit = (data) => {
     setLoading(true);
@@ -23,7 +27,8 @@ const Login = () => {
     .then( async result => {
         const user = await result.user;
         if(user){
-            setLoading(false)
+            setLoading(false);
+            navigate(from, {replace: true})
             toast.success('Successfully logged in!')
         }
     })

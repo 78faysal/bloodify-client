@@ -8,11 +8,17 @@ const Navbar = () => {
         <li><Link to={'/'}>Home</Link></li>
         <li><Link to={'/donation-requests'}>Donation Requests</Link></li>
         <li><Link to={'/blogs'}>Blogs</Link></li>
+
+        {user ? <div className="md:hidden"><Link to={'/fundings'} className="btn">Fundings</Link>
+          <Link to={'/dashboard'}>Dashboard</Link></div> : <div className="md:hidden">
+            <Link to={'/login'} className="btn">Login</Link>
+          <Link to={'/register'}>Register</Link>
+          </div>}
     </>
 
   return (
     <div>
-      <div className="navbar bg-base-200 px-28 fixed left-0 z-10">
+      <div className="navbar bg-base-200 md:px-28 fixed left-0 z-10">
         <div className="navbar-start">
           <div className="dropdown">
             <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -38,7 +44,7 @@ const Navbar = () => {
               {navlinks}
             </ul>
           </div>
-          <a className="btn btn-ghost text-xl">🩸Bloodify</a>
+          <a className="btn btn-ghost text-xl ">🩸Bloodify</a>
         </div>
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal px-1">
@@ -46,11 +52,11 @@ const Navbar = () => {
           </ul>
         </div>
         <div className="navbar-end gap-3">
-          {user ? <><Link to={'/fundings'} className="btn">Fundings</Link>
-          <Link to={'/dashboard'}>Dashboard</Link></> : <>
+          {user ? <div className="max-sm:hidden"><Link to={'/fundings'} className="btn">Fundings</Link>
+          <Link to={'/dashboard'}>Dashboard</Link></div> : <div className="max-sm:hidden">
             <Link to={'/login'} className="btn">Login</Link>
           <Link to={'/register'}>Register</Link>
-          </>}
+          </div>}
         </div>
       </div>
     </div>

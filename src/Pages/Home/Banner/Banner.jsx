@@ -13,12 +13,9 @@ const Banner = () => {
         <div className="hero-overlay bg-opacity-60"></div>
         <div className="hero-content text-center text-neutral-content">
           <div className="max-w-2xl">
-            <h1 className="mb-5 text-5xl font-bold">
+            <h1 className="mb-5 md:text-5xl max-sm:text-4xl font-bold">
               {" "}
               The <span className="text-red-300">Smart</span> Way to <br /> Donate <span className="text-red-400">Blood</span>
-              {/* <span className="bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500">
-    Hello world
-  </span> */}
             </h1>
             <p className="mb-5">
               Bloodify is a web app that helps you donate blood and save lives.
