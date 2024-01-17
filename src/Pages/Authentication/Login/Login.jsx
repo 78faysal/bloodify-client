@@ -20,7 +20,7 @@ const Login = () => {
 
   const onSubmit = (data) => {
     setLoading(true);
-    console.log(data);
+    // console.log(data);
 
     // log in user
     logInUser(data.email, data.password)
@@ -44,7 +44,7 @@ const Login = () => {
     })
   };
 
-  console.log(loading);
+  // console.log(loading);
   if(loading){
     return <Spinner />
   }

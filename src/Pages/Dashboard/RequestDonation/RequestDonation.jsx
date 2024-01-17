@@ -6,6 +6,9 @@ import useDivition from "../../../Hooks/useDivition";
 import Select from "react-select";
 import { useState } from "react";
 import useDistricts from "../../../Hooks/useDistricts";
+import { axiosSecure } from "../../../Hooks/useAxiosSecure";
+import toast from "react-hot-toast";
+import Spinner from "../../../components/Spinner";
 
 const RequestDonation = () => {
   const [divisionOption, setDivisionOption] = useState(null);
@@ -14,25 +17,46 @@ const RequestDonation = () => {
   const { user, loading } = useAuth();
   const { divisionOptions } = useDivition();
   const { districtOptions } = useDistricts(divisionOption);
-  const {upazillaOptions} = useUpazilla(districtOption);
+  const { upazillaOptions } = useUpazilla(districtOption);
+  const [submitLoading, setSubmitLoading] = useState(false);
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm();
 
   //   const upazilla = useUpazilla("8");
-  console.log(upazillaOption);
+  // console.log(upazillaOption);
 
   const onSubmit = async (data) => {
-    console.log(data);
+    setSubmitLoading(true);
+    data.division = divisionOption.value;
+    data.district = districtOption.value;
+    data.upazilla = upazillaOption.value;
+    data.status = 'pending';
+
+    axiosSecure.post('/donation_requests', data)
+    .then(res => {
+      if(res.data.insertedId){
+        reset();
+        setSubmitLoading(false);
+        toast.success('Successfully requested')
+      }
+    })
+    // console.log(data);
   };
+
+  if(loading){
+    return <Spinner />
+  }
+
   return (
     <div>
       <h2 className="text-2xl font-bold text-center">Create Donation</h2>
 
-      <form className="card-body" onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex">
+      <form className="card-body " onSubmit={handleSubmit(onSubmit)}>
+        <div className="md:flex gap-5">
           <div className="form-control w-full">
             <label className="label">
               <span className="label-text">Requester Name</span>
@@ -66,6 +90,7 @@ const RequestDonation = () => {
             <Select
               required
               className="w-full"
+              {...register('division')}
               onChange={setDivisionOption}
               options={divisionOptions}
             />
@@ -76,6 +101,7 @@ const RequestDonation = () => {
             </label>
             <Select
               required
+              {...register('district')}
               onChange={setDistrictOption}
               options={districtOptions}
             />
@@ -86,6 +112,7 @@ const RequestDonation = () => {
             </label>
             <Select
               required
+              {...register('upazilla')}
               onChange={setUpazillaOption}
               options={upazillaOptions}
             />
@@ -94,21 +121,72 @@ const RequestDonation = () => {
         <div className="md:flex gap-5">
           <div className="form-control w-full">
             <label className="label">
-              <span className="label-text">Password</span>
+              <span className="label-text">Recipient Name</span>
             </label>
             <input
-              type="password"
-              placeholder="Password"
+              type="text"
+              placeholder="recipient name"
               className="input input-bordered"
-              {...register("password", {
-                required: "Password is required",
-                minLength: {
-                  value: 6,
-                  message: "Password must be at least 6 characters long",
-                },
-              })}
+              {...register("recipient_name")}
             />
           </div>
+          <div className="form-control w-full">
+            <label className="label">
+              <span className="label-text">Hopital Name</span>
+            </label>
+            <input
+              type="text"
+              placeholder="where to donate blood."
+              className="input input-bordered"
+              {...register("hospital")}
+            />
+          </div>
+        </div>
+        <div className="form-control w-full">
+          <label className="label">
+            <span className="label-text">Full Address</span>
+          </label>
+          <input
+            type="text"
+            placeholder="Address line"
+            className="input input-bordered"
+            {...register("adresss")}
+          />
+        </div>
+        <div className="md:flex gap-5">
+          <div className="form-control w-full">
+            <label className="label">
+              <span className="label-text">Donation Date</span>
+            </label>
+            <input
+              type="date"
+              placeholder="Date"
+              className="input input-bordered"
+              {...register("date")}
+            />
+          </div>
+          <div className="form-control w-full">
+            <label className="label">
+              <span className="label-text">Donation Time</span>
+            </label>
+            <input
+              type="text"
+              placeholder="Time"
+              className="input input-bordered"
+              {...register("time")}
+            />
+          </div>
+        </div>
+        <div className="form-control w-full">
+          <label className="label">
+            <span className="label-text">Description</span>
+          </label>
+          <textarea
+            type="text"
+            placeholder="Why you need blood"
+            className="input input-bordered h-28 pt-3"
+            {...register("description")}
+          />
         </div>
         {errors.password && (
           <p className="text-red-500">{errors.password.message}</p>
@@ -116,10 +194,9 @@ const RequestDonation = () => {
         <div className="form-control mt-4">
           {/* <input type="submit" className="btn" value={` Update Profile`} /> */}
           <button className="btn" type="submit">
-            <LiaHourglassStartSolid
-              className={`text-lg ${loading ? "animate-spin" : ""}`}
-            />{" "}
-            Update Profile
+            {submitLoading && <LiaHourglassStartSolid
+              className='text-lg animate-spin'/>}
+            Request Donation
           </button>
         </div>
       </form>
