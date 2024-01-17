@@ -3,6 +3,7 @@ import { axiosSecure } from "../../../Hooks/useAxiosSecure";
 import { LiaHourglassStartSolid } from "react-icons/lia";
 import { useState } from "react";
 import useAuth from "../../../Hooks/useAuth";
+import toast from "react-hot-toast";
 
 const AllUsers = () => {
   const { laoding } = useAuth();
@@ -15,7 +16,7 @@ const AllUsers = () => {
     queryKey: ["users", filterValue],
     enabled: !laoding,
     queryFn: async () => {
-      const { data } = await axiosSecure.get("/users");
+      const { data } = await axiosSecure.get(`/users?status=${filterValue}`);
       //   console.log(data);
       return data;
     },
@@ -28,7 +29,55 @@ const AllUsers = () => {
     refetch();
   };
 
-  //   console.log(users);
+  const hanldeStatus = (user) => {
+    if (user.status === "active") {
+      user.status = "blocked";
+      axiosSecure
+        .patch(`/users/${user?.email}`, { status: user?.status })
+        .then((res) => {
+          if (res.data.modifiedCount > 0) {
+            refetch();
+            toast.success("User Blocked");
+          }
+        });
+    } else if (user.status === "blocked") {
+      user.status = "active";
+      axiosSecure
+        .patch(`/users/${user?.email}`, { status: user?.status })
+        .then((res) => {
+          if (res.data.modifiedCount > 0) {
+            refetch();
+            toast.success("User UnBlocked");
+          }
+        });
+    }
+  };
+
+  const handleMakeAdmin = (user) => {
+    user.role = "admin";
+    axiosSecure
+      .patch(`/users/${user?.email}`, { role: user?.role })
+      .then((res) => {
+        if (res.data.modifiedCount > 0) {
+          refetch();
+          toast.success(`${user.name} got the Admin role`);
+        }
+      });
+  };
+
+  const handleMakeVolunteer = (user) => {
+    user.role = "volunteer";
+    axiosSecure
+      .patch(`/users/${user?.email}`, { role: user?.role })
+      .then((res) => {
+        if (res.data.modifiedCount > 0) {
+          refetch();
+          toast.success(`${user.name} got the volunteer role`);
+        }
+      });
+  };
+
+  // console.log(filterValue);
 
   return (
     <div>
@@ -51,6 +100,12 @@ const AllUsers = () => {
         <option value="blocked">blocked</option>
       </select>
 
+      {users?.length < 1 && (
+        <div>
+          <h2 className="text-xl font-semibold px-4">No User Available</h2>
+        </div>
+      )}
+
       {users?.length > 0 && !isPending && (
         <div className="overflow-x-auto">
           <table className="table">
@@ -61,7 +116,8 @@ const AllUsers = () => {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Status</th>
-                <th>Action</th>
+                <th>Volunteer</th>
+                <th>Admin</th>
               </tr>
             </thead>
             <tbody>
@@ -87,22 +143,37 @@ const AllUsers = () => {
                       >
                         {user?.status}
                       </p>
-                      {(user?.status === "active" && (
-                        <button className="btn btn-sm">Block</button>
-                      )) ||
-                        (user?.status === "blocked" && (
-                          <button className="btn btn-sm">Unblock</button>
-                        ))}
+                      <button
+                        onClick={() => hanldeStatus(user)}
+                        className="btn btn-sm"
+                      >
+                        {user?.status === "active" ? "Block" : "Unblock"}
+                      </button>
                     </div>
                   </td>
                   <td className="gap-2">
-                    <button className="btn btn-sm">Make Volunteer</button>
-                    <button
-                      //   onClick={() => handleDelete(user?._id)}
-                      className="btn btn-sm md:mx-2 max-sm:my-2 btn-error"
-                    >
-                      <span className="flex items-center">Make Admin</span>
-                    </button>
+                    {user?.role !== "volunteer" && (
+                      <button
+                        onClick={() => handleMakeVolunteer(user)}
+                        className="btn btn-sm btn-outline btn-warning"
+                      >
+                        Make Volunteer
+                      </button>
+                    )}
+                    {user?.role === "volunteer" && <span>{user?.role}</span>}
+                  </td>
+                  <td>
+                    {user?.role !== "admin" && (
+                      <button
+                        onClick={() => handleMakeAdmin(user)}
+                        className="btn btn-sm md:mx-2 max-sm:my-2 btn-error"
+                      >
+                        Make Admin
+                      </button>
+                    )}
+                    {user?.role === "admin" && (
+                      <span className="md:ml-5">{user?.role}</span>
+                    )}
                   </td>
                 </tr>
               ))}

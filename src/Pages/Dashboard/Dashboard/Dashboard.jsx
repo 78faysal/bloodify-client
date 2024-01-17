@@ -3,13 +3,18 @@ import useAuth from "../../../Hooks/useAuth";
 import { axiosSecure } from "../../../Hooks/useAxiosSecure";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import Swal from "sweetalert2";
-// import { useState } from "react";
+import { RiMoneyDollarCircleLine } from "react-icons/ri";
 import { Link } from "react-router-dom";
 import { LiaHourglassStartSolid } from "react-icons/lia";
+import useAdmin from "../../../Hooks/useAdmin";
+import { useEffect, useState } from "react";
+import { LuUsers2 } from "react-icons/lu";
+import { PiGitPullRequestLight } from "react-icons/pi";
 
 const Dashboard = () => {
   const { user, loading } = useAuth();
-  //   const [status, setStatus] = useState("");
+  const [isAdmin] = useAdmin();
+  const [statistics, setStatistics] = useState({});
 
   const {
     data: recentDonations,
@@ -20,10 +25,18 @@ const Dashboard = () => {
     enabled: !loading,
     queryFn: async () => {
       const { data } = await axiosSecure.get(`/donation_requests`);
+      //   console.log(data);
       return data;
     },
   });
-    console.log(loading, recentDonations);
+
+  useEffect(() => {
+    axiosSecure.get("/statistics").then((res) => {
+      setStatistics(res.data);
+    });
+  }, []);
+
+  //   console.log(loading, recentDonations);
 
   const handleDelete = (id) => {
     Swal.fire({
@@ -62,7 +75,7 @@ const Dashboard = () => {
         </div>
       )}
 
-      {recentDonations?.length > 0 && (
+      {recentDonations?.length > 0 && isAdmin?.admin === false && (
         <div className="overflow-x-auto">
           <h3 className="text-xl font-semibold text-center my-4 mb-8">
             Your recent requests
@@ -123,6 +136,38 @@ const Dashboard = () => {
               </button>
             </Link>
           )}
+        </div>
+      )}
+
+      {isAdmin?.admin === true && (
+        <div className="stats shadow mt-5 flex max-sm:flex-col">
+          <div className="stat">
+            <div className="stat-figure text-primary">
+              <RiMoneyDollarCircleLine className="text-5xl" />
+            </div>
+            <div className="stat-title">Total Fundings</div>
+            <div className="stat-value text-primary">25.6$</div>
+          </div>
+
+          <div className="stat">
+            <div className="stat-figure text-secondary">
+              <LuUsers2 className="text-5xl" />
+            </div>
+            <div className="stat-title">Total Users</div>
+            <div className="stat-value text-secondary">
+              {statistics?.users} <span className="text-3xl">/P</span>
+            </div>
+          </div>
+
+          <div className="stat">
+            <div className="stat-figure text-primary">
+              <PiGitPullRequestLight className="text-5xl" />
+            </div>
+            <div className="stat-title">Donation Requests</div>
+            <div className="stat-value text-primary">
+              {statistics?.donationRequests}
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -13,6 +13,7 @@ import MyDonationRequests from "../Pages/Dashboard/MyDonationRequests/MyDonation
 import DonationRequestDetail from "../Pages/Dashboard/DonationRequestDetail/DonationRequestDetail";
 import PrivateRoute from "./PrivateRoute";
 import AllUsers from "../Pages/Dashboard/AllUsers/AllUsers";
+import AdminRoute from "./AdminRoute";
 
 const Routes = createBrowserRouter([
   {
@@ -27,44 +28,53 @@ const Routes = createBrowserRouter([
     ],
   },
   {
-    path: '/dashboard',
+    path: "/dashboard",
     errorElement: <NotFound />,
-    element: <PrivateRoute><DashboardLayout /></PrivateRoute>,
+    element: (
+      <PrivateRoute>
+        <DashboardLayout />
+      </PrivateRoute>
+    ),
     children: [
       {
-        path: '',
-        element: <Dashboard />
+        path: "",
+        element: <Dashboard />,
       },
       {
-        path: 'profile',
-        element: <MyProfile />
+        path: "profile",
+        element: <MyProfile />,
       },
       {
-        path: 'create-donation-request',
-        element: <RequestDonation />
+        path: "create-donation-request",
+        element: <RequestDonation />,
       },
       {
-        path: 'update-donation-request/:id',
-        loader: ({params}) => fetch(`http://localhost:5000/donation_requests/${params.id}`),
-        element: <UpdateRequestDonation />
+        path: "update-donation-request/:id",
+        loader: ({ params }) =>
+          fetch(`http://localhost:5000/donation_requests/${params.id}`),
+        element: <UpdateRequestDonation />,
       },
       {
-        path: 'my-donation-requests',
-        element: <MyDonationRequests />
+        path: "my-donation-requests",
+        element: <MyDonationRequests />,
       },
       {
-        path: 'donation-request-detail/:id',
-        loader: ({params}) => fetch(`http://localhost:5000/donation_requests/${params.id}`),
-        element: <DonationRequestDetail />
+        path: "donation-request-detail/:id",
+        loader: ({ params }) =>
+          fetch(`http://localhost:5000/donation_requests/${params.id}`),
+        element: <DonationRequestDetail />,
       },
 
-
-      // admin dashboard routes 
+      // admin dashboard routes
       {
-        path: 'allUsers',
-        element: <AllUsers />
-      }
-    ]
+        path: "allUsers",
+        element: (
+          <AdminRoute>
+            <AllUsers />
+          </AdminRoute>
+        ),
+      },
+    ],
   },
   {
     path: "/login",

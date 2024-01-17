@@ -8,7 +8,7 @@ import { LuLayoutDashboard } from "react-icons/lu";
 import { IoCreateOutline, IoHomeOutline } from "react-icons/io5";
 import { CiCircleList } from "react-icons/ci";
 import useAdmin from "../Hooks/useAdmin";
-
+import { PiUsersThree } from "react-icons/pi";
 
 
 const DashboardLayout = () => {
@@ -46,26 +46,57 @@ const DashboardLayout = () => {
             <div>
               <h2 className="text-xl font-bold text-center py-4">🩸Bloodify</h2>
               <li>
-                <Link to={"/dashboard"}><LuLayoutDashboard className="text-lg" /> Dashboard Home</Link>
+                <Link to={"/dashboard"}>
+                  <LuLayoutDashboard className="text-lg" /> Dashboard Home
+                </Link>
               </li>
-              <li>
-                <Link to={"/dashboard/create-donation-request"}><IoCreateOutline className="text-lg" />Request Donation</Link>
-              </li>
-              <li>
-                <Link to={"/dashboard/my-donation-requests"}><CiCircleList className="text-lg" />My Donation Requests</Link>
-              </li>
+              {isAdmin?.admin === false && (
+                <>
+                  <li>
+                    <Link to={"/dashboard/create-donation-request"}>
+                      <IoCreateOutline className="text-lg" />
+                      Request Donation
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to={"/dashboard/my-donation-requests"}>
+                      <CiCircleList className="text-lg" />
+                      My Donation Requests
+                    </Link>
+                  </li>
+                </>
+              )}
+
+              {isAdmin?.admin === true && (
+                <>
+                  <li>
+                    <Link to={"/dashboard/allUsers"}>
+                      <PiUsersThree className="text-lg" />
+                      All Users
+                    </Link>
+                  </li>
+                </>
+              )}
               <div className="divider my-2"></div>
               <li>
-                <Link to={"/"}><IoHomeOutline className="text-lg" />Home</Link>
+                <Link to={"/"}>
+                  <IoHomeOutline className="text-lg" />
+                  Home
+                </Link>
               </li>
             </div>
 
             <div className="font-semibold">
               <li>
-                <Link to={"/dashboard/profile"}><CgProfile className="text-lg" /> My Profile </Link>
+                <Link to={"/dashboard/profile"}>
+                  <CgProfile className="text-lg" /> My Profile{" "}
+                </Link>
               </li>
               <li>
-                <p onClick={handleLogOut}> <MdLogout className="text-lg" /> LogOut</p>
+                <p onClick={handleLogOut}>
+                  {" "}
+                  <MdLogout className="text-lg" /> LogOut
+                </p>
               </li>
             </div>
           </ul>
