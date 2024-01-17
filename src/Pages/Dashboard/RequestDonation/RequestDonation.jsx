@@ -9,15 +9,17 @@ import useDistricts from "../../../Hooks/useDistricts";
 import { axiosSecure } from "../../../Hooks/useAxiosSecure";
 import toast from "react-hot-toast";
 import Spinner from "../../../components/Spinner";
+// import useBlood from "../../../Hooks/useBlood";
 
 const RequestDonation = () => {
+  const { user, loading } = useAuth();
   const [divisionOption, setDivisionOption] = useState(null);
   const [districtOption, setDistrictOption] = useState(null);
   const [upazillaOption, setUpazillaOption] = useState(null);
-  const { user, loading } = useAuth();
   const { divisionOptions } = useDivition();
   const { districtOptions } = useDistricts(divisionOption);
   const { upazillaOptions } = useUpazilla(districtOption);
+  // const { bloodOptions } = useBlood();
   const [submitLoading, setSubmitLoading] = useState(false);
   const {
     register,
@@ -34,21 +36,20 @@ const RequestDonation = () => {
     data.division = divisionOption.value;
     data.district = districtOption.value;
     data.upazilla = upazillaOption.value;
-    data.status = 'pending';
+    data.status = "pending";
 
-    axiosSecure.post('/donation_requests', data)
-    .then(res => {
-      if(res.data.insertedId){
+    axiosSecure.post("/donation_requests", data).then((res) => {
+      if (res.data.insertedId) {
         reset();
         setSubmitLoading(false);
-        toast.success('Successfully requested')
+        toast.success("Successfully requested");
       }
-    })
+    });
     // console.log(data);
   };
 
-  if(loading){
-    return <Spinner />
+  if (loading) {
+    return <Spinner />;
   }
 
   return (
@@ -90,7 +91,7 @@ const RequestDonation = () => {
             <Select
               required
               className="w-full"
-              {...register('division')}
+              {...register("division")}
               onChange={setDivisionOption}
               options={divisionOptions}
             />
@@ -101,7 +102,7 @@ const RequestDonation = () => {
             </label>
             <Select
               required
-              {...register('district')}
+              {...register("district")}
               onChange={setDistrictOption}
               options={districtOptions}
             />
@@ -112,7 +113,7 @@ const RequestDonation = () => {
             </label>
             <Select
               required
-              {...register('upazilla')}
+              {...register("upazilla")}
               onChange={setUpazillaOption}
               options={upazillaOptions}
             />
@@ -194,8 +195,9 @@ const RequestDonation = () => {
         <div className="form-control mt-4">
           {/* <input type="submit" className="btn" value={` Update Profile`} /> */}
           <button className="btn" type="submit">
-            {submitLoading && <LiaHourglassStartSolid
-              className='text-lg animate-spin'/>}
+            {submitLoading && (
+              <LiaHourglassStartSolid className="text-lg animate-spin" />
+            )}
             Request Donation
           </button>
         </div>

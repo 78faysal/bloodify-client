@@ -2,7 +2,6 @@ import { axiosPublic } from "../../../Hooks/useAxiosPublic";
 import useAuth from "../../../Hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { BiDonateBlood } from "react-icons/bi";
-import Spinner from "../../../components/Spinner";
 import { LiaShareAltSolid } from "react-icons/lia";
 import { IoLocationOutline } from "react-icons/io5";
 import { useEffect, useState } from "react";
@@ -97,10 +96,6 @@ const MyProfile = () => {
 
     // console.log(profile);
 
-  if (isPending) {
-    return <Spinner />;
-  }
-
   const handleModalOpen = (profileInfo) => {
     document.getElementById("my_modal_3").showModal();
     setModalData(profileInfo);
@@ -115,8 +110,8 @@ const MyProfile = () => {
     const image = photoData.display_url;
 
     const updatedData = {
-      name: data.name,
-      email: data.email,
+      name: data?.name,
+      email: data?.email,
       image: image,
       blood: bloodOption.value,
       division: districtOption.division_name,
@@ -150,6 +145,13 @@ const MyProfile = () => {
   return (
     <div>
       <h2 className="text-2xl font-bold text-center mt-5">Profile Info</h2>
+
+      {isPending && (
+        <div className="min-h-screen flex justify-center items-center">
+          <LiaHourglassStartSolid className="text-2xl animate-spin" />
+        </div>
+      )}
+
       <div className="md:flex justify-center items-center max-w-3xl bg-base-200 p-10 rounded-xl gap-10 mx-auto rounded my-10">
         <figure>
           <img
@@ -162,7 +164,7 @@ const MyProfile = () => {
         </figure>
         <div className="space-y-2">
           <h2 className="text-3xl font-bold">{profile?.name}</h2>
-          <p>{profile.email}</p>
+          <p>{profile?.email}</p>
           <p className="flex items-center gap-2">
             <BiDonateBlood />
             {profile?.blood}{" "}

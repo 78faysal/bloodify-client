@@ -9,7 +9,7 @@ import { LiaHourglassStartSolid } from "react-icons/lia";
 
 const Dashboard = () => {
   const { user, loading } = useAuth();
-//   const [status, setStatus] = useState("");
+  //   const [status, setStatus] = useState("");
 
   const {
     data: recentDonations,
@@ -17,13 +17,13 @@ const Dashboard = () => {
     refetch,
   } = useQuery({
     queryKey: ["donation-requests"],
-    enabled: !!loading,
+    enabled: !loading,
     queryFn: async () => {
       const { data } = await axiosSecure.get(`/donation_requests`);
       return data;
     },
   });
-  //   console.log(recentDonations?.length);
+    console.log(loading, recentDonations);
 
   const handleDelete = (id) => {
     Swal.fire({
@@ -103,7 +103,11 @@ const Dashboard = () => {
                         <RiDeleteBin5Line /> Delete
                       </span>
                     </button>
-                    <button className="btn btn-sm btn-outline">View</button>
+                    <Link
+                      to={`/dashboard/donation-request-detail/${donation?._id}`}
+                    >
+                      <button className="btn btn-sm btn-outline">View</button>
+                    </Link>
                   </td>
                 </tr>
               ))}

@@ -10,6 +10,9 @@ import MyProfile from "../Pages/Dashboard/MyProfile/MyProfile";
 import RequestDonation from "../Pages/Dashboard/RequestDonation/RequestDonation";
 import UpdateRequestDonation from "../Pages/Dashboard/UpdateRequestDonation/UpdateRequestDonation";
 import MyDonationRequests from "../Pages/Dashboard/MyDonationRequests/MyDonationRequests";
+import DonationRequestDetail from "../Pages/Dashboard/DonationRequestDetail/DonationRequestDetail";
+import PrivateRoute from "./PrivateRoute";
+import AllUsers from "../Pages/Dashboard/AllUsers/AllUsers";
 
 const Routes = createBrowserRouter([
   {
@@ -26,7 +29,7 @@ const Routes = createBrowserRouter([
   {
     path: '/dashboard',
     errorElement: <NotFound />,
-    element: <DashboardLayout />,
+    element: <PrivateRoute><DashboardLayout /></PrivateRoute>,
     children: [
       {
         path: '',
@@ -48,6 +51,18 @@ const Routes = createBrowserRouter([
       {
         path: 'my-donation-requests',
         element: <MyDonationRequests />
+      },
+      {
+        path: 'donation-request-detail/:id',
+        loader: ({params}) => fetch(`http://localhost:5000/donation_requests/${params.id}`),
+        element: <DonationRequestDetail />
+      },
+
+
+      // admin dashboard routes 
+      {
+        path: 'allUsers',
+        element: <AllUsers />
       }
     ]
   },

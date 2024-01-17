@@ -6,11 +6,16 @@ import { MdLogout } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
 import { LuLayoutDashboard } from "react-icons/lu";
 import { IoCreateOutline, IoHomeOutline } from "react-icons/io5";
+import { CiCircleList } from "react-icons/ci";
+import useAdmin from "../Hooks/useAdmin";
 
 
 
 const DashboardLayout = () => {
   const { logOut } = useAuth();
+  const [isAdmin] = useAdmin();
+
+  console.log(isAdmin);
 
   const handleLogOut = () => {
     logOut().then(() => {
@@ -45,6 +50,9 @@ const DashboardLayout = () => {
               </li>
               <li>
                 <Link to={"/dashboard/create-donation-request"}><IoCreateOutline className="text-lg" />Request Donation</Link>
+              </li>
+              <li>
+                <Link to={"/dashboard/my-donation-requests"}><CiCircleList className="text-lg" />My Donation Requests</Link>
               </li>
               <div className="divider my-2"></div>
               <li>

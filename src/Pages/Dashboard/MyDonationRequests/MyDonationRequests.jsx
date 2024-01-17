@@ -4,16 +4,18 @@ import { Link } from "react-router-dom";
 import { axiosSecure } from "../../../Hooks/useAxiosSecure";
 import Swal from "sweetalert2";
 import { LiaHourglassStartSolid } from "react-icons/lia";
+import { useState } from "react";
 
 const MyDonationRequests = () => {
+  const [filterValue, setFilterValue] = useState('pending');
   const {
     data: recentDonations,
     isPending,
     refetch,
   } = useQuery({
-    queryKey: ["my-donation-requests"],
+    queryKey: ["my-donation-requests", filterValue],
     queryFn: async () => {
-      const { data } = await axiosSecure.get(`/donation_requests`);
+      const { data } = await axiosSecure.get(`/donation_requests?status=${filterValue}`);
       return data;
     },
   });
@@ -43,15 +45,39 @@ const MyDonationRequests = () => {
     });
   };
 
+
+const handleChange = (e) => {
+    e.preventDefault();
+    const selectedValue = e.target.value;
+    setFilterValue(selectedValue);
+    refetch();
+}
+
+//   console.log(filterValue);
+
   return (
     <div>
-      <h2 className="text-2xl font-bold text-center mb-5">My Donation Requests</h2>
+      <h2 className="text-2xl font-bold text-center mb-5">
+        My Donation Requests
+      </h2>
 
       {isPending && (
         <div className="min-h-screen flex justify-center items-center">
           <LiaHourglassStartSolid className="text-2xl animate-spin" />
         </div>
       )}
+
+      <select onChange={handleChange} className="mb-5 md:ml-4 border p-2 px-3" value={filterValue} name="status">
+        {/* <option defaultChecked aria-readonly value="pending">Filter</option> */}
+        <option value="pending">pending</option>
+        <option value="inprogress">inprogress</option>
+        <option value="done">done</option>
+        <option value="canceled">canceled</option>
+      </select>
+
+      {recentDonations?.length < 1 && <div>
+            <h2 className="text-xl font-semibold px-4">No Data Available</h2>
+        </div>}
 
       {recentDonations?.length > 0 && !isPending && (
         <div className="overflow-x-auto">
@@ -91,22 +117,16 @@ const MyDonationRequests = () => {
                         <RiDeleteBin5Line /> Delete
                       </span>
                     </button>
-                    <button className="btn btn-sm btn-outline">View</button>
+                    <Link
+                      to={`/dashboard/donation-request-detail/${donation?._id}`}
+                    >
+                      <button className="btn btn-sm btn-outline">View</button>
+                    </Link>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          {recentDonations?.length > 3 && (
-            <Link
-              className="flex justify-center mt-5"
-              to={"/my-donation-requests"}
-            >
-              <button className="btn btn-outline btn-sm flex">
-                View All Requests
-              </button>
-            </Link>
-          )}
         </div>
       )}
     </div>
