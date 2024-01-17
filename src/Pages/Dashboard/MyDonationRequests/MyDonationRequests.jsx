@@ -1,29 +1,22 @@
 import { useQuery } from "@tanstack/react-query";
-import useAuth from "../../../Hooks/useAuth";
-import { axiosSecure } from "../../../Hooks/useAxiosSecure";
 import { RiDeleteBin5Line } from "react-icons/ri";
-import Swal from "sweetalert2";
-// import { useState } from "react";
 import { Link } from "react-router-dom";
+import { axiosSecure } from "../../../Hooks/useAxiosSecure";
+import Swal from "sweetalert2";
 import { LiaHourglassStartSolid } from "react-icons/lia";
 
-const Dashboard = () => {
-  const { user, loading } = useAuth();
-//   const [status, setStatus] = useState("");
-
+const MyDonationRequests = () => {
   const {
     data: recentDonations,
     isPending,
     refetch,
   } = useQuery({
-    queryKey: ["donation-requests"],
-    enabled: !!loading,
+    queryKey: ["my-donation-requests"],
     queryFn: async () => {
       const { data } = await axiosSecure.get(`/donation_requests`);
       return data;
     },
   });
-  //   console.log(recentDonations?.length);
 
   const handleDelete = (id) => {
     Swal.fire({
@@ -52,9 +45,7 @@ const Dashboard = () => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold">
-        Welcome <span className="text-red-500">{user?.displayName} 🎉</span>
-      </h2>
+      <h2 className="text-2xl font-bold text-center mb-5">My Donation Requests</h2>
 
       {isPending && (
         <div className="min-h-screen flex justify-center items-center">
@@ -62,11 +53,8 @@ const Dashboard = () => {
         </div>
       )}
 
-      {recentDonations?.length > 0 && (
+      {recentDonations?.length > 0 && !isPending && (
         <div className="overflow-x-auto">
-          <h3 className="text-xl font-semibold text-center my-4 mb-8">
-            Your recent requests
-          </h3>
           <table className="table">
             {/* head */}
             <thead>
@@ -80,7 +68,7 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {recentDonations?.slice(0, 3).map((donation) => (
+              {recentDonations?.map((donation) => (
                 <tr key={donation?._id}>
                   <th>{donation?.recipient_name}</th>
                   <td>
@@ -112,7 +100,7 @@ const Dashboard = () => {
           {recentDonations?.length > 3 && (
             <Link
               className="flex justify-center mt-5"
-              to={"/dashboard/my-donation-requests"}
+              to={"/my-donation-requests"}
             >
               <button className="btn btn-outline btn-sm flex">
                 View All Requests
@@ -125,4 +113,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default MyDonationRequests;

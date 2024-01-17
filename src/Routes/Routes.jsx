@@ -8,6 +8,8 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import Dashboard from "../Pages/Dashboard/Dashboard/Dashboard";
 import MyProfile from "../Pages/Dashboard/MyProfile/MyProfile";
 import RequestDonation from "../Pages/Dashboard/RequestDonation/RequestDonation";
+import UpdateRequestDonation from "../Pages/Dashboard/UpdateRequestDonation/UpdateRequestDonation";
+import MyDonationRequests from "../Pages/Dashboard/MyDonationRequests/MyDonationRequests";
 
 const Routes = createBrowserRouter([
   {
@@ -37,6 +39,15 @@ const Routes = createBrowserRouter([
       {
         path: 'create-donation-request',
         element: <RequestDonation />
+      },
+      {
+        path: 'update-donation-request/:id',
+        loader: ({params}) => fetch(`http://localhost:5000/donation_requests/${params.id}`),
+        element: <UpdateRequestDonation />
+      },
+      {
+        path: 'my-donation-requests',
+        element: <MyDonationRequests />
       }
     ]
   },
