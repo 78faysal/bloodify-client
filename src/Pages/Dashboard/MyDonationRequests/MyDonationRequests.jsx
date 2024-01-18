@@ -9,7 +9,7 @@ import useAuth from "../../../Hooks/useAuth";
 
 const MyDonationRequests = () => {
   const { user } = useAuth();
-  const [filterValue, setFilterValue] = useState("pending");
+  const [filterValue, setFilterValue] = useState("all");
   const {
     data: recentDonations,
     isPending,
@@ -18,7 +18,7 @@ const MyDonationRequests = () => {
     queryKey: ["my-donation-requests", filterValue],
     queryFn: async () => {
       const { data } = await axiosSecure.get(
-        `/donation_requests/filter/${user?.email}`
+        `/donation_requests/filter/${user?.email}?status=${filterValue}`
       );
       return data;
     },
@@ -76,7 +76,7 @@ const MyDonationRequests = () => {
         value={filterValue}
         name="status"
       >
-        {/* <option defaultChecked aria-readonly value="pending">Filter</option> */}
+        <option value="all">All</option>
         <option value="pending">pending</option>
         <option value="inprogress">inprogress</option>
         <option value="done">done</option>

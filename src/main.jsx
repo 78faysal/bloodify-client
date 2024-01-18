@@ -6,6 +6,7 @@ import Routes from "./Routes/Routes";
 import AuthProvider from "./providers/AuthProvider";
 import { Toaster } from "react-hot-toast";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+// import 'jodit/build/jodit.min.css';
 
 const queryClient = new QueryClient();
 

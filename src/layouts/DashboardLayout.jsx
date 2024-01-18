@@ -8,14 +8,17 @@ import { LuLayoutDashboard } from "react-icons/lu";
 import { IoCreateOutline, IoHomeOutline } from "react-icons/io5";
 import { CiCircleList } from "react-icons/ci";
 import useAdmin from "../Hooks/useAdmin";
-import { PiUsersThree } from "react-icons/pi";
+import { PiGitPullRequestLight, PiUsersThree } from "react-icons/pi";
+import { MdOutlineContentPaste } from "react-icons/md";
+import useVolunteer from "../Hooks/useVolunteer";
 
 
 const DashboardLayout = () => {
   const { logOut } = useAuth();
   const [isAdmin] = useAdmin();
+  const [isVolunteer] = useVolunteer();
 
-  console.log(isAdmin);
+  console.log(isAdmin, isVolunteer);
 
   const handleLogOut = () => {
     logOut().then(() => {
@@ -50,7 +53,7 @@ const DashboardLayout = () => {
                   <LuLayoutDashboard className="text-lg" /> Dashboard Home
                 </Link>
               </li>
-              {isAdmin?.admin === false && (
+              {isAdmin?.admin === false && isVolunteer?.volunteer === false && (
                 <>
                   <li>
                     <Link to={"/dashboard/create-donation-request"}>
@@ -67,12 +70,24 @@ const DashboardLayout = () => {
                 </>
               )}
 
-              {isAdmin?.admin === true && (
+              {isAdmin?.admin === true || isVolunteer?.volunteer === true && (
                 <>
-                  <li>
+                  {isAdmin?.admin === true && <li>
                     <Link to={"/dashboard/allUsers"}>
                       <PiUsersThree className="text-lg" />
                       All Users
+                    </Link>
+                  </li>}
+                  <li>
+                    <Link to={"/dashboard/all-blood-requests"}>
+                      <PiGitPullRequestLight className="text-lg" />
+                      All Blood Requests
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to={"/dashboard/content-management"}>
+                      <MdOutlineContentPaste className="text-lg" />
+                      Content Management
                     </Link>
                   </li>
                 </>

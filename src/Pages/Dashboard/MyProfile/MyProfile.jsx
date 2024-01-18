@@ -164,7 +164,7 @@ const MyProfile = () => {
         </figure>
         <div className="space-y-2">
           <h2 className="text-3xl font-bold">{profile?.name}</h2>
-          <p>{profile?.email}</p>
+          <p>Email: {profile?.email}</p>
           <p className="flex items-center gap-2">
             <BiDonateBlood />
             {profile?.blood}{" "}

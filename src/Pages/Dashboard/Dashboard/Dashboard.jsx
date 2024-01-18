@@ -10,10 +10,12 @@ import useAdmin from "../../../Hooks/useAdmin";
 import { useEffect, useState } from "react";
 import { LuUsers2 } from "react-icons/lu";
 import { PiGitPullRequestLight } from "react-icons/pi";
+import useVolunteer from "../../../Hooks/useVolunteer";
 
 const Dashboard = () => {
   const { user, loading } = useAuth();
   const [isAdmin] = useAdmin();
+  const [isVolunteer] = useVolunteer();
   const [statistics, setStatistics] = useState({});
 
   const {
@@ -24,7 +26,7 @@ const Dashboard = () => {
     queryKey: ["donation-requests"],
     enabled: !loading,
     queryFn: async () => {
-      const { data } = await axiosSecure.get(`/donation_requests`);
+      const { data } = await axiosSecure.get(`/donation_requests/filter/${user?.email}`);
       //   console.log(data);
       return data;
     },
@@ -75,7 +77,11 @@ const Dashboard = () => {
         </div>
       )}
 
-      {recentDonations?.length > 0 && isAdmin?.admin === false && (
+      {/* {recentDonations?.length < 1 && <div>
+            <h1 className="text-2xl font-bold">You have not requested for any donation</h1>
+        </div>} */}
+
+      {recentDonations?.length > 0 && isAdmin?.admin === false && isVolunteer?.volunteer === false && (
         <div className="overflow-x-auto">
           <h3 className="text-xl font-semibold text-center my-4 mb-8">
             Your recent requests
@@ -139,7 +145,7 @@ const Dashboard = () => {
         </div>
       )}
 
-      {isAdmin?.admin === true && (
+      {isAdmin?.admin === true || isVolunteer?.volunteer === true && (
         <div className="stats shadow mt-5 flex max-sm:flex-col">
           <div className="stat">
             <div className="stat-figure text-primary">
