@@ -5,9 +5,11 @@ import { axiosSecure } from "../../../Hooks/useAxiosSecure";
 import Swal from "sweetalert2";
 import { LiaHourglassStartSolid } from "react-icons/lia";
 import { useState } from "react";
+import useAuth from "../../../Hooks/useAuth";
 
 const MyDonationRequests = () => {
-  const [filterValue, setFilterValue] = useState('pending');
+  const { user } = useAuth();
+  const [filterValue, setFilterValue] = useState("pending");
   const {
     data: recentDonations,
     isPending,
@@ -15,7 +17,9 @@ const MyDonationRequests = () => {
   } = useQuery({
     queryKey: ["my-donation-requests", filterValue],
     queryFn: async () => {
-      const { data } = await axiosSecure.get(`/donation_requests?status=${filterValue}`);
+      const { data } = await axiosSecure.get(
+        `/donation_requests/filter/${user?.email}`
+      );
       return data;
     },
   });
@@ -45,15 +49,14 @@ const MyDonationRequests = () => {
     });
   };
 
-
-const handleChange = (e) => {
+  const handleChange = (e) => {
     e.preventDefault();
     const selectedValue = e.target.value;
     setFilterValue(selectedValue);
     refetch();
-}
+  };
 
-//   console.log(filterValue);
+  //   console.log(filterValue);
 
   return (
     <div>
@@ -67,7 +70,12 @@ const handleChange = (e) => {
         </div>
       )}
 
-      <select onChange={handleChange} className="mb-5 md:ml-4 border p-2 px-3" value={filterValue} name="status">
+      <select
+        onChange={handleChange}
+        className="mb-5 md:ml-4 border p-2 px-3"
+        value={filterValue}
+        name="status"
+      >
         {/* <option defaultChecked aria-readonly value="pending">Filter</option> */}
         <option value="pending">pending</option>
         <option value="inprogress">inprogress</option>
@@ -75,9 +83,11 @@ const handleChange = (e) => {
         <option value="canceled">canceled</option>
       </select>
 
-      {recentDonations?.length < 1 && <div>
-            <h2 className="text-xl font-semibold px-4">No Data Available</h2>
-        </div>}
+      {recentDonations?.length < 1 && (
+        <div>
+          <h2 className="text-xl font-semibold px-4">No Data Available</h2>
+        </div>
+      )}
 
       {recentDonations?.length > 0 && !isPending && (
         <div className="overflow-x-auto">
