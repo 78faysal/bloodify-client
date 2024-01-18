@@ -14,15 +14,14 @@ const Footer = () => {
         </aside>
         <nav>
           <header className="footer-title">Services</header>
-          <Link to={''} className="link link-hover">Branding</Link>
-          <Link to={''} className="link link-hover">Design</Link>
-          <Link to={''} className="link link-hover">Marketing</Link>
-          <Link to={''} className="link link-hover">Advertisement</Link>
+          <Link to={'/donor-search'} className="link link-hover">Get Blood</Link>
+          <Link to={'/donation-requests'} className="link link-hover">Donate Blood</Link>
+          <Link to={'/blogs'} className="link link-hover">Blogs</Link>
         </nav>
         <nav>
           <header className="footer-title">Company</header>
           <Link to={''} className="link link-hover">About us</Link>
-          <Link to={''} className="link link-hover">Contact</Link>
+          <Link to={'/'} className="link link-hover">Contact Us</Link>
           <Link to={''} className="link link-hover">Jobs</Link>
           <Link to={''} className="link link-hover">Press kit</Link>
         </nav>

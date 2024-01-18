@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import { LiaHourglassStartSolid } from "react-icons/lia";
 import { useState } from "react";
 import useAuth from "../../../Hooks/useAuth";
+import toast from "react-hot-toast";
 
 const MyDonationRequests = () => {
   const { user } = useAuth();
@@ -54,6 +55,22 @@ const MyDonationRequests = () => {
     const selectedValue = e.target.value;
     setFilterValue(selectedValue);
     refetch();
+  };
+
+  const handleStatus = (donation, targetStatus) => {
+    // setOparetionLaoding(true);
+    console.log(targetStatus);
+    axiosSecure
+      .patch(`/donation_requests/${donation?._id}`, { targetStatus })
+      .then((res) => {
+        console.log(res.data);
+        if (res.data.modifiedCount > 0) {
+        //   setOparetionLaoding(false);
+          //   console.log(oparetionLoading);
+          refetch();
+          toast.success(`Donation ${targetStatus}`);
+        }
+      });
   };
 
   //   console.log(filterValue);
@@ -112,21 +129,51 @@ const MyDonationRequests = () => {
                   </td>
                   <td>{donation?.date}</td>
                   <td>{donation?.time}</td>
-                  <td>{donation?.status}</td>
+                  <td>
+                    {donation?.status !== "inprogress" && <span>{donation?.status}</span>}
+                    {donation?.status === "inprogress" && (
+                      <>
+                        <p className="text-center font-semibold">Donor Info</p>
+                        <span>{donation?.donor_name}, </span>
+                        <span>{donation?.donor_email}</span>
+                      </>
+                    )}
+                  </td>
                   <td className="gap-2">
-                    <Link
-                      to={`/dashboard/update-donation-request/${donation?._id}`}
-                    >
-                      <button className="btn btn-sm">Update</button>
-                    </Link>
-                    <button
-                      onClick={() => handleDelete(donation?._id)}
-                      className="btn btn-sm md:mx-2 max-sm:my-2 btn-error"
-                    >
-                      <span className="flex items-center">
-                        <RiDeleteBin5Line /> Delete
-                      </span>
-                    </button>
+                    {donation?.status === "pending" && (
+                      <>
+                        <Link
+                          to={`/dashboard/update-donation-request/${donation?._id}`}
+                        >
+                          <button className="btn btn-sm">Update</button>
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(donation?._id)}
+                          className="btn btn-sm md:mx-2 max-sm:my-2 btn-error"
+                        >
+                          <span className="flex items-center">
+                            <RiDeleteBin5Line /> Delete
+                          </span>
+                        </button>
+                      </>
+                    )}
+
+                    {donation?.status === "inprogress" && (
+                      <>
+                        <button
+                          onClick={() => handleStatus(donation, "done")}
+                          className="btn btn-sm"
+                        >
+                          Done
+                        </button>
+                        <button
+                          onClick={() => handleStatus(donation, "canceled")}
+                          className="btn btn-sm md:mx-2 max-sm:my-2 btn-error"
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    )}
                     <Link
                       to={`/dashboard/donation-request-detail/${donation?._id}`}
                     >
