@@ -19,6 +19,8 @@ import ContentManagement from "../Pages/Dashboard/ContentManagement/ContentManag
 import AddBlog from "../Pages/Dashboard/AddBlog/AddBlog";
 import BloodDonationRequests from "../Pages/BloodDonationRequests/BloodDonationRequests";
 import DonationDetails from "../Pages/DonationDetails/DonationDetails";
+import DonorSearch from "../Pages/DonorSearch/DonorSearch";
+import Blogs from "../Pages/Blogs/Blogs";
 
 const Routes = createBrowserRouter([
   {
@@ -37,8 +39,16 @@ const Routes = createBrowserRouter([
       {
         path: '/donation-requests/:id',
         loader: ({params}) => fetch(`http://localhost:5000/donation_requests/${params.id}`),
-        element: <DonationDetails />
+        element: <PrivateRoute><DonationDetails /></PrivateRoute>
       },
+      {
+        path: '/donor-search',
+        element: <DonorSearch />
+      },
+      {
+        path: '/blogs',
+        element: <Blogs />
+      }
     ],
   },
   {

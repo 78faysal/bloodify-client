@@ -9,6 +9,7 @@ import useDistricts from "../../../Hooks/useDistricts";
 import { axiosSecure } from "../../../Hooks/useAxiosSecure";
 import toast from "react-hot-toast";
 import Spinner from "../../../components/Spinner";
+import { useQuery } from "@tanstack/react-query";
 // import useBlood from "../../../Hooks/useBlood";
 
 const RequestDonation = () => {
@@ -27,6 +28,17 @@ const RequestDonation = () => {
     reset,
     formState: { errors },
   } = useForm();
+
+  
+  const { data: myData } = useQuery({
+    queryKey: ["user"],
+    queryFn: async () => {
+      const res = await axiosSecure.get(`/users/${user?.email}`);
+      //   console.log(res.data);
+      return res.data;
+    },
+  });
+
 
   //   const upazilla = useUpazilla("8");
   // console.log(upazillaOption);
@@ -56,7 +68,7 @@ const RequestDonation = () => {
     <div>
       <h2 className="text-2xl font-bold text-center">Create Donation</h2>
 
-      <form className="card-body " onSubmit={handleSubmit(onSubmit)}>
+      {myData?.status === 'active' ? <form className="card-body " onSubmit={handleSubmit(onSubmit)}>
         <div className="md:flex gap-5">
           <div className="form-control w-full">
             <label className="label">
@@ -202,6 +214,11 @@ const RequestDonation = () => {
           </button>
         </div>
       </form>
+      :
+      <div className="min-h-screen flex justify-center items-center">
+        <h2 className="text-xl font-bold">You can not request for donation</h2>
+      </div>  
+    }
     </div>
   );
 };

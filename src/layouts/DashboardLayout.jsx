@@ -70,7 +70,7 @@ const DashboardLayout = () => {
                 </>
               )}
 
-              {isAdmin?.admin === true || isVolunteer?.volunteer === true && (
+              {(isAdmin?.admin === true || isVolunteer?.volunteer === true) && (
                 <>
                   {isAdmin?.admin === true && <li>
                     <Link to={"/dashboard/allUsers"}>

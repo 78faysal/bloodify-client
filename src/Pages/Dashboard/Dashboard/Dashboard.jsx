@@ -145,7 +145,7 @@ const Dashboard = () => {
         </div>
       )}
 
-      {isAdmin?.admin === true || isVolunteer?.volunteer === true && (
+      {(isAdmin?.admin === true || isVolunteer?.volunteer === true) && (
         <div className="stats shadow mt-5 flex max-sm:flex-col">
           <div className="stat">
             <div className="stat-figure text-primary">
