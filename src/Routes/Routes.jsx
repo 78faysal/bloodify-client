@@ -21,6 +21,7 @@ import BloodDonationRequests from "../Pages/BloodDonationRequests/BloodDonationR
 import DonationDetails from "../Pages/DonationDetails/DonationDetails";
 import DonorSearch from "../Pages/DonorSearch/DonorSearch";
 import Blogs from "../Pages/Blogs/Blogs";
+import Fundings from "../Pages/Fundings/Fundings";
 
 const Routes = createBrowserRouter([
   {
@@ -48,6 +49,10 @@ const Routes = createBrowserRouter([
       {
         path: '/blogs',
         element: <Blogs />
+      },
+      {
+        path: '/fundings',
+        element: <Fundings />
       }
     ],
   },

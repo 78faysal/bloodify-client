@@ -6,26 +6,27 @@ import { Link } from "react-router-dom";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import useAdmin from "../../../Hooks/useAdmin";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
-// import useVolunteer from "../../../Hooks/useVolunteer";
+import useVolunteer from "../../../Hooks/useVolunteer";
+import toast from "react-hot-toast";
 
 const AllBloodRequests = () => {
   const [isAdmin] = useAdmin();
+  const [isVolunteer] = useVolunteer();
   const axiosSecure = useAxiosSecure();
-  // const [isVolunteer] = useVolunteer();
-  const [filterValue, setFilterValue] = useState("pending");
+  const [filterValue, setFilterValue] = useState("all");
   const {
     data: allRequests,
     isPending,
     refetch,
   } = useQuery({
-    queryKey: ["blood-requests", filterValue],
+    queryKey: ["all-bloodRequests", filterValue],
     queryFn: async () => {
-      const { data } = await axiosSecure.get(
-        `/donation_requests?status=${filterValue}`
-      );
+      const { data } = await axiosSecure.get("/donation_requests/all");
       return data;
     },
   });
+
+  // console.log(Math.ceil(allRequests?.length/3));
 
   const handleDelete = (id) => {
     Swal.fire({
@@ -59,6 +60,23 @@ const AllBloodRequests = () => {
     refetch();
   };
 
+  const handleStatusUpdate = (e, donation) => {
+    e.preventDefault();
+    const selectedValue = e.target.value;
+    axiosSecure
+      .patch(`/donation_requests/${donation._id}`, {
+        targetStatus: selectedValue,
+      })
+      .then((res) => {
+        if (res.data.modifiedCount > 0) {
+          toast.success("Dontion Status Changed");
+          refetch();
+        }
+      });
+  };
+
+  // console.log(changeStatus);
+
   return (
     <div>
       <h2 className="text-2xl font-bold text-center mb-5">
@@ -77,7 +95,7 @@ const AllBloodRequests = () => {
         value={filterValue}
         name="status"
       >
-        {/* <option defaultChecked aria-readonly value="pending">Filter</option> */}
+        <option value="all">All</option>
         <option value="pending">pending</option>
         <option value="inprogress">inprogress</option>
         <option value="done">done</option>
@@ -113,28 +131,49 @@ const AllBloodRequests = () => {
                   </td>
                   <td>{donation?.date}</td>
                   <td>{donation?.time}</td>
-                  <td>{donation?.status}</td>
-                  <td className="gap-2">
-                    <Link
-                      to={`/dashboard/update-donation-request/${donation?._id}`}
-                    >
-                      <button className="btn btn-sm">Update</button>
-                    </Link>
-                    {isAdmin.admin === true && (
-                      <button
-                        onClick={() => handleDelete(donation?._id)}
-                        className="btn btn-sm md:mx-2 max-sm:my-2 btn-error"
+                  <td>
+                    {donation?.status}
+                    {isVolunteer?.volunteer === true && (
+                      <select
+                        onChange={(e) => handleStatusUpdate(e, donation)}
+                        className="mb-5 md:ml-4 border p-2 w-20 "
+                        name="status"
                       >
-                        <span className="flex items-center">
-                          <RiDeleteBin5Line /> Delete
-                        </span>
-                      </button>
+                        <option aria-readonly value="pending">
+                          Update
+                        </option>
+                        <option value="pending">pending</option>
+                        <option value="inprogress">inprogress</option>
+                        <option value="done">done</option>
+                        <option value="canceled">canceled</option>
+                      </select>
                     )}
-                    <Link
-                      to={`/dashboard/donation-request-detail/${donation?._id}`}
-                    >
-                      <button className="btn btn-sm btn-outline">View</button>
-                    </Link>
+                  </td>
+                  <td className="gap-2">
+                    {isAdmin?.admin === true && (
+                      <>
+                        <Link
+                          to={`/dashboard/update-donation-request/${donation?._id}`}
+                        >
+                          <button className="btn btn-sm">Update</button>
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(donation?._id)}
+                          className="btn btn-sm md:mx-2 max-sm:my-2 btn-error"
+                        >
+                          <span className="flex items-center">
+                            <RiDeleteBin5Line /> Delete
+                          </span>
+                        </button>
+                        <Link
+                          to={`/dashboard/donation-request-detail/${donation?._id}`}
+                        >
+                          <button className="btn btn-sm btn-outline">
+                            View
+                          </button>
+                        </Link>
+                      </>
+                    )}
                   </td>
                 </tr>
               ))}
