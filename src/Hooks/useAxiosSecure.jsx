@@ -4,13 +4,12 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 export const axiosSecure = axios.create({
-  baseURL: "http://localhost:5000",
+  baseURL: "https://bloodify-server.vercel.app",
 });
 
 const useAxiosSecure = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-
 
   axiosSecure.interceptors.request.use(
     function (config) {

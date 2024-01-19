@@ -34,26 +34,33 @@ const Routes = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: '/donation-requests',
-        element: <BloodDonationRequests />
+        path: "/donation-requests",
+        element: <BloodDonationRequests />,
       },
       {
-        path: '/donation-requests/:id',
-        loader: ({params}) => fetch(`http://localhost:5000/donation_requests/${params.id}`),
-        element: <PrivateRoute><DonationDetails /></PrivateRoute>
+        path: "/donation-requests/:id",
+        loader: ({ params }) =>
+          fetch(
+            `https://bloodify-server.vercel.app/donation_requests/${params.id}`
+          ),
+        element: (
+          <PrivateRoute>
+            <DonationDetails />
+          </PrivateRoute>
+        ),
       },
       {
-        path: '/donor-search',
-        element: <DonorSearch />
+        path: "/donor-search",
+        element: <DonorSearch />,
       },
       {
-        path: '/blogs',
-        element: <Blogs />
+        path: "/blogs",
+        element: <Blogs />,
       },
       {
-        path: '/fundings',
-        element: <Fundings />
-      }
+        path: "/fundings",
+        element: <Fundings />,
+      },
     ],
   },
   {
@@ -80,7 +87,9 @@ const Routes = createBrowserRouter([
       {
         path: "update-donation-request/:id",
         loader: ({ params }) =>
-          fetch(`http://localhost:5000/donation_requests/${params.id}`),
+          fetch(
+            `https://bloodify-server.vercel.app/donation_requests/${params.id}`
+          ),
         element: <UpdateRequestDonation />,
       },
       {
@@ -90,7 +99,9 @@ const Routes = createBrowserRouter([
       {
         path: "donation-request-detail/:id",
         loader: ({ params }) =>
-          fetch(`http://localhost:5000/donation_requests/${params.id}`),
+          fetch(
+            `https://bloodify-server.vercel.app/donation_requests/${params.id}`
+          ),
         element: <DonationRequestDetail />,
       },
 
@@ -112,13 +123,21 @@ const Routes = createBrowserRouter([
         ),
       },
       {
-        path: 'content-management',
-        element: <AdminRoute><ContentManagement/></AdminRoute>
+        path: "content-management",
+        element: (
+          <AdminRoute>
+            <ContentManagement />
+          </AdminRoute>
+        ),
       },
       {
-        path: 'content-management/add-blog',
-        element: <AdminRoute><AddBlog /></AdminRoute>
-      }
+        path: "content-management/add-blog",
+        element: (
+          <AdminRoute>
+            <AddBlog />
+          </AdminRoute>
+        ),
+      },
     ],
   },
   {

@@ -40,7 +40,7 @@ const Dashboard = () => {
     axiosSecure.get("/statistics").then((res) => {
       setStatistics(res.data);
     });
-  }, []);
+  }, [axiosSecure]);
 
   //   console.log(loading, recentDonations);
 
@@ -205,7 +205,9 @@ const Dashboard = () => {
               <RiMoneyDollarCircleLine className="text-5xl" />
             </div>
             <div className="stat-title">Total Fundings</div>
-            <div className="stat-value text-primary">25.6$</div>
+            <div className="stat-value text-primary">
+              {statistics?.totalFundings}$
+            </div>
           </div>
 
           <div className="stat">

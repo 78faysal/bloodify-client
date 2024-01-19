@@ -20,21 +20,23 @@ const DonorSearch = () => {
   const { districtOptions } = useDistricts(divisionOption);
   const { upazillaOptions } = useUpazilla(districtOption);
 
-  console.log(bloodOption?.value);
+  // console.log(bloodOption?.value);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    console.log('form submitted');
+    console.log("form submitted");
 
     const data = { blood: bloodOption.value, district: districtOption.value };
-    axiosPublic.get('/users/donor')
-    .then((res) => {
-      console.log(res.data);
-    })
-    .catch(error => {
-      console.log(error);
-    })
+    console.log(data);
+    axiosSecure
+      .get("/users/donor", { params: data })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return (
@@ -42,7 +44,7 @@ const DonorSearch = () => {
       <p className="text-center">Get a donor my filter</p>
       <h2 className="text-2xl font-bold text-center mb-5">Search a donor</h2>
 
-      <form className="" onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit}>
         <div className="flex gap-2 items-end justify-center">
           <div>
             <label className="label">Blood</label>
