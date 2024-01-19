@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { axiosSecure } from "../../../Hooks/useAxiosSecure";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 import { LiaHourglassStartSolid } from "react-icons/lia";
 import { useState } from "react";
 import useAuth from "../../../Hooks/useAuth";
@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 const AllUsers = () => {
   const { laoding } = useAuth();
   const [filterValue, setFilterValue] = useState("active");
+  const axiosSecure = useAxiosSecure();
   const {
     data: users,
     isPending,
@@ -17,7 +18,6 @@ const AllUsers = () => {
     enabled: !laoding,
     queryFn: async () => {
       const { data } = await axiosSecure.get(`/users?status=${filterValue}`);
-      //   console.log(data);
       return data;
     },
   });

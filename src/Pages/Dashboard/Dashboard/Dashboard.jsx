@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import useAuth from "../../../Hooks/useAuth";
-import { axiosSecure } from "../../../Hooks/useAxiosSecure";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import Swal from "sweetalert2";
 import { RiMoneyDollarCircleLine } from "react-icons/ri";
@@ -12,12 +11,14 @@ import { LuUsers2 } from "react-icons/lu";
 import { PiGitPullRequestLight } from "react-icons/pi";
 import useVolunteer from "../../../Hooks/useVolunteer";
 import toast from "react-hot-toast";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 
 const Dashboard = () => {
   const { user, loading } = useAuth();
   const [isAdmin] = useAdmin();
   const [isVolunteer] = useVolunteer();
   const [statistics, setStatistics] = useState({});
+  const axiosSecure = useAxiosSecure();
 
   const {
     data: recentDonations,

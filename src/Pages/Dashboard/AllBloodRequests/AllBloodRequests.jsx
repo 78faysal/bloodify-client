@@ -1,21 +1,28 @@
 import { useQuery } from "@tanstack/react-query";
-import { axiosSecure } from "../../../Hooks/useAxiosSecure";
 import { LiaHourglassStartSolid } from "react-icons/lia";
 import Swal from "sweetalert2";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import useAdmin from "../../../Hooks/useAdmin";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 // import useVolunteer from "../../../Hooks/useVolunteer";
 
 const AllBloodRequests = () => {
-    const [isAdmin] = useAdmin();
-    // const [isVolunteer] = useVolunteer();
-    const [filterValue, setFilterValue] = useState("pending");
-  const { data: allRequests, isPending, refetch } = useQuery({
+  const [isAdmin] = useAdmin();
+  const axiosSecure = useAxiosSecure();
+  // const [isVolunteer] = useVolunteer();
+  const [filterValue, setFilterValue] = useState("pending");
+  const {
+    data: allRequests,
+    isPending,
+    refetch,
+  } = useQuery({
     queryKey: ["blood-requests", filterValue],
     queryFn: async () => {
-      const { data } = await axiosSecure.get(`/donation_requests?status=${filterValue}`);
+      const { data } = await axiosSecure.get(
+        `/donation_requests?status=${filterValue}`
+      );
       return data;
     },
   });
@@ -44,7 +51,6 @@ const AllBloodRequests = () => {
       }
     });
   };
-
 
   const handleChange = (e) => {
     e.preventDefault();
@@ -114,14 +120,16 @@ const AllBloodRequests = () => {
                     >
                       <button className="btn btn-sm">Update</button>
                     </Link>
-                    {isAdmin.admin === true && <button
-                      onClick={() => handleDelete(donation?._id)}
-                      className="btn btn-sm md:mx-2 max-sm:my-2 btn-error"
-                    >
-                      <span className="flex items-center">
-                        <RiDeleteBin5Line /> Delete
-                      </span>
-                    </button>}
+                    {isAdmin.admin === true && (
+                      <button
+                        onClick={() => handleDelete(donation?._id)}
+                        className="btn btn-sm md:mx-2 max-sm:my-2 btn-error"
+                      >
+                        <span className="flex items-center">
+                          <RiDeleteBin5Line /> Delete
+                        </span>
+                      </button>
+                    )}
                     <Link
                       to={`/dashboard/donation-request-detail/${donation?._id}`}
                     >

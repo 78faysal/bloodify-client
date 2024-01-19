@@ -4,11 +4,12 @@ import JoditEditor from "jodit-react";
 import { useForm } from "react-hook-form";
 import { LiaHourglassStartSolid } from "react-icons/lia";
 import imageUpload from "../../../Hooks/imageUpload";
-import { axiosSecure } from "../../../Hooks/useAxiosSecure";
 import toast from "react-hot-toast";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 
 const AddBlog = () => {
   const editor = useRef(null);
+  const axiosSecure = useAxiosSecure();
   const [content, setContent] = useState("");
   const [submitLoading, setSubmitLoading] = useState(false);
   const { register, handleSubmit, reset } = useForm();
@@ -21,7 +22,7 @@ const AddBlog = () => {
     const photoData = await imageUpload(photoFile);
     data.blog_thumbnail = photoData.display_url;
     data.blog_content = content;
-    data.status = 'draft';
+    data.status = "draft";
 
     const { data: blog } = await axiosSecure.post("/blogs", data);
     // console.log(blog);

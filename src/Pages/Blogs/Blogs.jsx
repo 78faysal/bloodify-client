@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { axiosSecure } from "../../Hooks/useAxiosSecure";
 import { LiaHourglassStartSolid } from "react-icons/lia";
 import useAuth from "../../Hooks/useAuth";
 import HTMLReactParser from "html-react-parser";
+import useAxiosSecure from "../../Hooks/useAxiosSecure";
 
 const Blogs = () => {
   const { loading } = useAuth();
+  const axiosSecure = useAxiosSecure();
   const { data: blogs, isPending } = useQuery({
     queryKey: ["blogs"],
     enabled: !loading,
@@ -35,11 +36,7 @@ const Blogs = () => {
                 className="card lg:card-side bg-base-100 shadow-xl"
               >
                 <figure className="md:w-1/4">
-                  <img
-                    className="h-full"
-                    src={blog?.blog_thumbnail}
-                    alt=""
-                  />
+                  <img className="h-full" src={blog?.blog_thumbnail} alt="" />
                 </figure>
                 <div className="card-body md:w-3/4">
                   <h2 className="card-title">{blog?.blog_title}</h2>

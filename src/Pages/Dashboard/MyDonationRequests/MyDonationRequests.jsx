@@ -1,16 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { Link } from "react-router-dom";
-import { axiosSecure } from "../../../Hooks/useAxiosSecure";
 import Swal from "sweetalert2";
 import { LiaHourglassStartSolid } from "react-icons/lia";
 import { useState } from "react";
 import useAuth from "../../../Hooks/useAuth";
 import toast from "react-hot-toast";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 
 const MyDonationRequests = () => {
   const { user } = useAuth();
   const [filterValue, setFilterValue] = useState("all");
+  const axiosSecure = useAxiosSecure();
   const {
     data: recentDonations,
     isPending,
@@ -65,7 +66,7 @@ const MyDonationRequests = () => {
       .then((res) => {
         console.log(res.data);
         if (res.data.modifiedCount > 0) {
-        //   setOparetionLaoding(false);
+          //   setOparetionLaoding(false);
           //   console.log(oparetionLoading);
           refetch();
           toast.success(`Donation ${targetStatus}`);
@@ -130,7 +131,9 @@ const MyDonationRequests = () => {
                   <td>{donation?.date}</td>
                   <td>{donation?.time}</td>
                   <td>
-                    {donation?.status !== "inprogress" && <span>{donation?.status}</span>}
+                    {donation?.status !== "inprogress" && (
+                      <span>{donation?.status}</span>
+                    )}
                     {donation?.status === "inprogress" && (
                       <>
                         <p className="text-center font-semibold">Donor Info</p>

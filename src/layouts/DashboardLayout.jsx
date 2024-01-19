@@ -18,7 +18,7 @@ const DashboardLayout = () => {
   const [isAdmin] = useAdmin();
   const [isVolunteer] = useVolunteer();
 
-  console.log(isAdmin, isVolunteer);
+  // console.log(isAdmin, isVolunteer);
 
   const handleLogOut = () => {
     logOut().then(() => {

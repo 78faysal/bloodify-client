@@ -2,12 +2,13 @@ import { useState } from "react";
 import { LiaHourglassStartSolid } from "react-icons/lia";
 import { useLoaderData, useNavigate } from "react-router-dom";
 import useAuth from "../../Hooks/useAuth";
-import { axiosSecure } from "../../Hooks/useAxiosSecure";
 import toast from "react-hot-toast";
+import useAxiosSecure from "../../Hooks/useAxiosSecure";
 
 const DonationDetails = () => {
   const details = useLoaderData();
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
   const [modalOpen, setModalOpen] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ const DonationDetails = () => {
           setModalOpen(false);
           toast.success("Successfull! Please get ready for the donation");
           setSubmitLoading(false);
-          navigate(-1)
+          navigate(-1);
         }
       });
 
@@ -117,7 +118,12 @@ const DonationDetails = () => {
             </div>
             <div className="form-control mt-4">
               {/* <input type="submit" className="btn" value={` Update Profile`} /> */}
-              <button className={`btn ${details?.requester_email === user?.email && 'hidden'}`} type="submit">
+              <button
+                className={`btn ${
+                  details?.requester_email === user?.email && "hidden"
+                }`}
+                type="submit"
+              >
                 {submitLoading && (
                   <LiaHourglassStartSolid className={`text-lg animate-spin`} />
                 )}

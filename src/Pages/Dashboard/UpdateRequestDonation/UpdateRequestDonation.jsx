@@ -4,15 +4,16 @@ import useDivition from "../../../Hooks/useDivition";
 import useDistricts from "../../../Hooks/useDistricts";
 import useUpazilla from "../../../Hooks/useUpazilla";
 import { useForm } from "react-hook-form";
-import { axiosSecure } from "../../../Hooks/useAxiosSecure";
 import toast from "react-hot-toast";
 import Spinner from "../../../components/Spinner";
-import Select from 'react-select';
+import Select from "react-select";
 import { LiaHourglassStartSolid } from "react-icons/lia";
 import { useLoaderData } from "react-router-dom";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 
 const UpdateRequestDonation = () => {
-    const defaultData = useLoaderData();
+  const axiosSecure = useAxiosSecure();
+  const defaultData = useLoaderData();
   const [divisionOption, setDivisionOption] = useState(null);
   const [districtOption, setDistrictOption] = useState(null);
   const [upazillaOption, setUpazillaOption] = useState(null);
@@ -35,13 +36,15 @@ const UpdateRequestDonation = () => {
     data.upazilla = upazillaOption.value;
     data.status = "pending";
 
-    axiosSecure.patch(`/donation_requests/${defaultData?._id}`, data).then((res) => {
-      if (res.data.modifiedCount > 0){
-        reset();
-        setSubmitLoading(false);
-        toast.success("Successfully requested");
-      }
-    });
+    axiosSecure
+      .patch(`/donation_requests/${defaultData?._id}`, data)
+      .then((res) => {
+        if (res.data.modifiedCount > 0) {
+          reset();
+          setSubmitLoading(false);
+          toast.success("Successfully requested");
+        }
+      });
     // console.log(data);
   };
 
@@ -88,7 +91,7 @@ const UpdateRequestDonation = () => {
               <span className="label-text">Division</span>
             </label>
             <Select
-                defaultValue={defaultData.division}
+              defaultValue={defaultData.division}
               required
               className="w-full"
               {...register("division")}
@@ -101,7 +104,7 @@ const UpdateRequestDonation = () => {
               <span className="label-text">District</span>
             </label>
             <Select
-            defaultValue={defaultData.district}
+              defaultValue={defaultData.district}
               required
               {...register("district")}
               onChange={setDistrictOption}
@@ -113,7 +116,7 @@ const UpdateRequestDonation = () => {
               <span className="label-text">Upazilla</span>
             </label>
             <Select
-            defaultValue={defaultData.upazilla}
+              defaultValue={defaultData.upazilla}
               required
               {...register("upazilla")}
               onChange={setUpazillaOption}
@@ -127,7 +130,7 @@ const UpdateRequestDonation = () => {
               <span className="label-text">Recipient Name</span>
             </label>
             <input
-            defaultValue={defaultData.recipient_name}
+              defaultValue={defaultData.recipient_name}
               type="text"
               placeholder="recipient name"
               className="input input-bordered"
@@ -139,7 +142,7 @@ const UpdateRequestDonation = () => {
               <span className="label-text">Hopital Name</span>
             </label>
             <input
-            defaultValue={defaultData.hospital}
+              defaultValue={defaultData.hospital}
               type="text"
               placeholder="where to donate blood."
               className="input input-bordered"
@@ -152,7 +155,7 @@ const UpdateRequestDonation = () => {
             <span className="label-text">Full Address</span>
           </label>
           <input
-          defaultValue={defaultData.adresss}
+            defaultValue={defaultData.adresss}
             type="text"
             placeholder="Address line"
             className="input input-bordered"
@@ -165,7 +168,7 @@ const UpdateRequestDonation = () => {
               <span className="label-text">Donation Date</span>
             </label>
             <input
-            defaultValue={defaultData.date}
+              defaultValue={defaultData.date}
               type="date"
               placeholder="Date"
               className="input input-bordered"
@@ -177,7 +180,7 @@ const UpdateRequestDonation = () => {
               <span className="label-text">Donation Time</span>
             </label>
             <input
-            defaultValue={defaultData.time}
+              defaultValue={defaultData.time}
               type="text"
               placeholder="Time"
               className="input input-bordered"
@@ -190,7 +193,7 @@ const UpdateRequestDonation = () => {
             <span className="label-text">Description</span>
           </label>
           <textarea
-          defaultValue={defaultData.description}
+            defaultValue={defaultData.description}
             type="text"
             placeholder="Why you need blood"
             className="input input-bordered h-28 pt-3"

@@ -1,13 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { axiosSecure } from "../../../Hooks/useAxiosSecure";
 import toast from "react-hot-toast";
 import { LiaHourglassStartSolid } from "react-icons/lia";
 import useAdmin from "../../../Hooks/useAdmin";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 
 const ContentManagement = () => {
   const [filterValue, setFilterValue] = useState("all");
+  const axiosSecure = useAxiosSecure();
   const [oparetionLoading, setOparetionLaoding] = useState(false);
   const [isAdmin] = useAdmin();
 
@@ -110,20 +111,22 @@ const ContentManagement = () => {
                   </div>
                 </h2>
                 <p></p>
-                {isAdmin?.admin === true && <div className="card-actions justify-start mt-5">
-                  <button
-                    onClick={() => handleBlogStatus(blog)}
-                    className="btn btn-outline btn-sm"
-                  >
-                    {blog?.status === "draft" ? "Publish" : "Unpublish"}
-                  </button>
-                  <button
-                    onClick={() => hanldeDelete(blog?._id)}
-                    className="btn btn-error btn-sm"
-                  >
-                    Delete Blog
-                  </button>
-                </div>}
+                {isAdmin?.admin === true && (
+                  <div className="card-actions justify-start mt-5">
+                    <button
+                      onClick={() => handleBlogStatus(blog)}
+                      className="btn btn-outline btn-sm"
+                    >
+                      {blog?.status === "draft" ? "Publish" : "Unpublish"}
+                    </button>
+                    <button
+                      onClick={() => hanldeDelete(blog?._id)}
+                      className="btn btn-error btn-sm"
+                    >
+                      Delete Blog
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           ))}

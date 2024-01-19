@@ -5,9 +5,10 @@ import useDistricts from "../../Hooks/useDistricts";
 import useUpazilla from "../../Hooks/useUpazilla";
 import useDivition from "../../Hooks/useDivition";
 import { useState } from "react";
-import { axiosSecure } from "../../Hooks/useAxiosSecure";
+import useAxiosSecure from "../../Hooks/useAxiosSecure";
 
 const DonorSearch = () => {
+  const axiosSecure = useAxiosSecure();
   const [bloodOption, setBloodOption] = useState(null);
   const [divisionOption, setDivisionOption] = useState(null);
   const [districtOption, setDistrictOption] = useState(null);
@@ -17,16 +18,15 @@ const DonorSearch = () => {
   const { districtOptions } = useDistricts(divisionOption);
   const { upazillaOptions } = useUpazilla(districtOption);
 
-    console.log(bloodOption?.value);
+  console.log(bloodOption?.value);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     const data = { blood: bloodOption.value, district: districtOption.value };
-    axiosSecure.get(`/users?query=${JSON.stringify(data)}`)
-    .then(res => {
-        console.log(res.data);
-    })
+    axiosSecure.get(`/users?query=${JSON.stringify(data)}`).then((res) => {
+      console.log(res.data);
+    });
   };
 
   return (
