@@ -1,84 +1,35 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
 import Select from "react-select";
 import imageUpload from "../../../Hooks/imageUpload";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import useAuth from "../../../Hooks/useAuth";
 import { axiosPublic } from "../../../Hooks/useAxiosPublic";
 import toast from "react-hot-toast";
 import Spinner from "../../../components/Spinner";
+import useDivition from "../../../Hooks/useDivition";
+import useDistricts from "../../../Hooks/useDistricts";
+import useUpazilla from "../../../Hooks/useUpazilla";
+import useBlood from "../../../Hooks/useBlood";
+import { useState } from "react";
 
 const Register = () => {
   const { createUser, updateUser } = useAuth();
   const [bloodOption, setBloodOption] = useState(null);
   const [divisionOption, setDivisionOption] = useState(null);
   const [districtOption, setDistrictOption] = useState(null);
-  const [districtOptions, setDistrictOptions] = useState([]);
+  const [upazillaOption, setUpazillaOption] = useState(null);
+  const { bloodOptions } = useBlood();
+  const { divisionOptions } = useDivition();
+  const { districtOptions } = useDistricts(divisionOption);
+  const { upazillaOptions } = useUpazilla(districtOption);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm();
-
-  useEffect(() => {
-    axios.get("districts.json").then((res) => {
-      const districtsOfDivition = res.data.filter(
-        (district) => district.division_name === divisionOption?.value
-      );
-      setDistrictOptions(districtsOfDivition);
-    });
-  }, [divisionOption]);
-
-  // console.log(districtOptions);
-
-  const bloodOptions = [
-    { value: "O+", label: "O+" },
-    { value: "O-", label: "O-" },
-    { value: "A+", label: "A+" },
-    { value: "A-", label: "A-" },
-    { value: "B+", label: "B+" },
-    { value: "B-", label: "B-" },
-    { value: "AB+", label: "AB+" },
-    { value: "AB-", label: "AB-" },
-  ];
-
-  const divisionOptions = [
-    {
-      value: "Chattagram",
-      label: "Chattagram",
-    },
-    {
-      value: "Rajshahi",
-      label: "Rajshahi",
-    },
-    {
-      value: "Khulna",
-      label: "Khulna",
-    },
-    {
-      value: "Barisal",
-      label: "Barisal",
-    },
-    {
-      value: "Sylhet",
-      label: "Sylhet",
-    },
-    {
-      value: "Dhaka",
-      label: "Dhaka",
-    },
-    {
-      value: "Rangpur",
-      label: "Rangpur",
-    },
-    {
-      value: "Mymensingh",
-      label: "Mymensingh",
-    },
-  ];
 
   const onSubmit = async (data) => {
     setLoading(true);
@@ -92,8 +43,9 @@ const Register = () => {
       email: data.email,
       image: image,
       blood: bloodOption.value,
-      division: districtOption.division_name,
+      division: divisionOption.value,
       district: districtOption.value,
+      upazilla: upazillaOption.value,
       password: data.password,
       role: "donor",
       status: "active",
@@ -109,11 +61,10 @@ const Register = () => {
               toast("Congrats! you become a donor", {
                 icon: "👏",
               });
+              navigate('/')
             }
           });
-          updateUser(data.name, image)
-          .then(() => {
-          });
+          updateUser(data.name, image).then(() => {});
         }
       })
       .catch((error) => {
@@ -175,17 +126,16 @@ const Register = () => {
               required
             />
           </div>
+          <div>
+            <label className="label">Blood Group</label>
+            <Select
+              required
+              className="w-full"
+              onChange={setBloodOption}
+              options={bloodOptions}
+            />
+          </div>
           <div className="md:flex gap-5">
-            <div className="form-control w-full">
-              <label className="label">
-                <span className="label-text">Blood Group</span>
-              </label>
-              <Select
-                required
-                onChange={setBloodOption}
-                options={bloodOptions}
-              />
-            </div>
             <div className="form-control w-full">
               <label className="label">
                 <span className="label-text">Division</span>
@@ -205,6 +155,16 @@ const Register = () => {
                 required
                 onChange={setDistrictOption}
                 options={districtOptions}
+              />
+            </div>
+            <div className="form-control w-full">
+              <label className="label">
+                <span className="label-text">Upazilla</span>
+              </label>
+              <Select
+                required
+                onChange={setUpazillaOption}
+                options={upazillaOptions}
               />
             </div>
           </div>

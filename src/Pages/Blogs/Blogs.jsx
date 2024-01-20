@@ -2,23 +2,23 @@ import { useQuery } from "@tanstack/react-query";
 import { LiaHourglassStartSolid } from "react-icons/lia";
 import useAuth from "../../Hooks/useAuth";
 import HTMLReactParser from "html-react-parser";
-import useAxiosSecure from "../../Hooks/useAxiosSecure";
+import useAxiosPublic from "../../Hooks/useAxiosPublic";
 
 const Blogs = () => {
   const { loading } = useAuth();
-  const axiosSecure = useAxiosSecure();
+  const axiosPublic = useAxiosPublic();
   const { data: blogs, isPending } = useQuery({
     queryKey: ["blogs"],
     enabled: !loading,
     queryFn: async () => {
-      const { data } = await axiosSecure.get("/blogs?status=published");
+      const { data } = await axiosPublic.get("/publised-blogs");
       return data;
     },
   });
 
   //   console.log(blogs);
   return (
-    <div className="pt-24">
+    <div className="pt-24 mb-20">
       {isPending && (
         <div className="min-h-screen flex justify-center items-center">
           <LiaHourglassStartSolid className="text-2xl animate-spin" />

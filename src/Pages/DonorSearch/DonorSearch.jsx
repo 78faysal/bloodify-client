@@ -5,11 +5,12 @@ import useDistricts from "../../Hooks/useDistricts";
 import useUpazilla from "../../Hooks/useUpazilla";
 import useDivition from "../../Hooks/useDivition";
 import { useState } from "react";
-import useAxiosSecure from "../../Hooks/useAxiosSecure";
+// import useAxiosSecure from "../../Hooks/useAxiosSecure";
 import useAxiosPublic from "../../Hooks/useAxiosPublic";
+import { LiaHourglassStartSolid } from "react-icons/lia";
 
 const DonorSearch = () => {
-  const axiosSecure = useAxiosSecure();
+  // const axiosSecure = useAxiosSecure();
   const axiosPublic = useAxiosPublic();
   const [bloodOption, setBloodOption] = useState(null);
   const [divisionOption, setDivisionOption] = useState(null);
@@ -19,22 +20,30 @@ const DonorSearch = () => {
   const { divisionOptions } = useDivition();
   const { districtOptions } = useDistricts(divisionOption);
   const { upazillaOptions } = useUpazilla(districtOption);
+  const [donors, setDonors] = useState([]);
+  const [donorLoading, setDonorLoading] = useState(false);
 
   // console.log(bloodOption?.value);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setDonorLoading(true);
 
-    console.log("form submitted");
+    const bloodValue = bloodOption.value.trim();
 
-    const data = { blood: bloodOption.value, district: districtOption.value };
-    console.log(data);
-    axiosSecure
-      .get("/users/donor", { params: data })
+    axiosPublic
+      .get(
+        `/users-donor?blood=${encodeURIComponent(bloodValue)}&&district=${
+          districtOption?.value
+        }`
+      )
       .then((res) => {
-        console.log(res);
+        console.log(res.data);
+        setDonors(res.data);
+        setDonorLoading(false);
       })
       .catch((error) => {
+        setDonorLoading(false);
         console.log(error);
       });
   };
@@ -87,6 +96,39 @@ const DonorSearch = () => {
           <input className="btn" type="submit" value="Search" />
         </div>
       </form>
+
+      {donorLoading && (
+        <div className="min-h-screen flex justify-center items-center">
+          <LiaHourglassStartSolid className="text-2xl animate-spin" />
+        </div>
+      )}
+
+      {donors?.length < 1 && <div className="my-20">
+          <h2 className="text-2xl font-bold text-center">No Donor Avaiable</h2>
+        </div>}
+
+      {donors?.length > 0 && (
+        <div className="grid md:grid-cols-3 gap-10 my-20">
+          {donors?.map((donor) => (
+            <div key={donor?._id} className="card bg-base-100 shadow-xl">
+              <figure>
+                <img
+                  className="w-full object-cover"
+                  src={donor?.image}
+                  alt=""
+                />
+              </figure>
+              <div className="card-body p-4">
+                <h2 className="card-title">{donor?.name}</h2>
+                <p>Email: {donor?.email}</p>
+                <p>Blood: {donor?.blood}</p>
+                <p>District: {donor?.district}</p>
+                <p>Upazilla: {donor?.upazilla}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

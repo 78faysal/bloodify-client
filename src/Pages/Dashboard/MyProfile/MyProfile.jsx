@@ -4,21 +4,36 @@ import { useQuery } from "@tanstack/react-query";
 import { BiDonateBlood } from "react-icons/bi";
 import { LiaShareAltSolid } from "react-icons/lia";
 import { IoLocationOutline } from "react-icons/io5";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import axios from "axios";
 import imageUpload from "../../../Hooks/imageUpload";
 import toast from "react-hot-toast";
 import Select from "react-select";
 import { LiaHourglassStartSolid } from "react-icons/lia";
-
+import useBlood from "../../../Hooks/useBlood";
+import useDivition from "../../../Hooks/useDivition";
+import useDistricts from "../../../Hooks/useDistricts";
+import useUpazilla from "../../../Hooks/useUpazilla";
 
 const MyProfile = () => {
   const { user, updateUser, updatePass } = useAuth();
   const [modalData, setModalData] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [bloodOption, setBloodOption] = useState(null);
+  const [divisionOption, setDivisionOption] = useState(null);
+  const [districtOption, setDistrictOption] = useState(null);
+  const [upazillaOption, setUpazillaOption] = useState(null);
+  const { bloodOptions } = useBlood();
+  const { divisionOptions } = useDivition();
+  const { districtOptions } = useDistricts(divisionOption);
+  const { upazillaOptions } = useUpazilla(districtOption);
+  const [loading, setLoading] = useState(false);
 
-  const { data: profile, isPending, refetch } = useQuery({
+  const {
+    data: profile,
+    isPending,
+    refetch,
+  } = useQuery({
     queryKey: ["user"],
     queryFn: async () => {
       const res = await axiosPublic.get(`/users/${user?.email}`);
@@ -27,11 +42,6 @@ const MyProfile = () => {
     },
   });
 
-  const [bloodOption, setBloodOption] = useState(null);
-  const [divisionOption, setDivisionOption] = useState(null);
-  const [districtOption, setDistrictOption] = useState(null);
-  const [districtOptions, setDistrictOptions] = useState([]);
-  const [loading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -39,68 +49,12 @@ const MyProfile = () => {
     formState: { errors },
   } = useForm();
 
-  useEffect(() => {
-    axios.get("/districts.json").then((res) => {
-      const districtsOfDivition = res.data.filter(
-        (district) => district.division_name === divisionOption?.value
-      );
-      setDistrictOptions(districtsOfDivition);
-    });
-  }, [divisionOption]);
-
-  const bloodOptions = [
-    { value: "o+", label: "O+" },
-    { value: "o-", label: "O-" },
-    { value: "a+", label: "A+" },
-    { value: "a-", label: "A-" },
-    { value: "b+", label: "B+" },
-    { value: "b-", label: "B-" },
-    { value: "ab+", label: "AB+" },
-    { value: "ab-", label: "AB-" },
-  ];
-
-  const divisionOptions = [
-    {
-      value: "Chattagram",
-      label: "Chattagram",
-    },
-    {
-      value: "Rajshahi",
-      label: "Rajshahi",
-    },
-    {
-      value: "Khulna",
-      label: "Khulna",
-    },
-    {
-      value: "Barisal",
-      label: "Barisal",
-    },
-    {
-      value: "Sylhet",
-      label: "Sylhet",
-    },
-    {
-      value: "Dhaka",
-      label: "Dhaka",
-    },
-    {
-      value: "Rangpur",
-      label: "Rangpur",
-    },
-    {
-      value: "Mymensingh",
-      label: "Mymensingh",
-    },
-  ];
-
-    // console.log(profile);
+  // console.log(profile);
 
   const handleModalOpen = (profileInfo) => {
     document.getElementById("my_modal_3").showModal();
     setModalData(profileInfo);
   };
-
 
   const onSubmit = async (data) => {
     setLoading(true);
@@ -114,33 +68,38 @@ const MyProfile = () => {
       email: data?.email,
       image: image,
       blood: bloodOption.value,
-      division: districtOption.division_name,
+      division: divisionOption.value,
       district: districtOption.value,
+      upazilla: upazillaOption.value,
       password: data.password,
     };
-    console.log(updatedData);
+    // console.log(updatedData);
 
     // update user
-    axiosPublic
-      .patch(`/users/${user?.email}`, updatedData)
-      .then((res) => {
-        if (res.data.modifiedCount > 0) {
-          setLoading(false);
-          refetch();
-          reset();
-          setModalOpen(false);
-          toast.success("Congrats! your profile updated");
-        }
-        updateUser(data.name, image).then(() => {});
-        updatePass(data.password).then(() => {});
-      })
-      .catch(() => {
+    axiosPublic.patch(`/users-info/${user?.email}`, updatedData).then((res) => {
+      if (res.data.modifiedCount > 0) {
         setLoading(false);
-        toast.error("Something is wrong");
-      });
+        refetch();
+        reset();
+        setModalOpen(false);
+        toast.success("Congrats! your profile updated");
+      }
+      updateUser(data.name, image)
+        .then((result) => {
+          console.log(result);
+        })
+        .catch((error) => {
+          setLoading(false);
+          console.log(error);
+        });
+      updatePass(data.password)
+        .then(() => {})
+        .catch((error) => {
+          setLoading(false);
+          console.log(error);
+        });
+    });
   };
-
-//   console.log(modalData);
 
   return (
     <div>
@@ -171,14 +130,16 @@ const MyProfile = () => {
           </p>
           <p className="flex items-center gap-2">
             <LiaShareAltSolid />
-            {profile?.division}
+            {profile?.district}
           </p>
           <div className="flex items-center gap-2">
             <IoLocationOutline />
-            {profile?.district}
+            {profile?.upazilla}
           </div>
           <button
-            onClick={() => {handleModalOpen(profile), setModalOpen(true)}}
+            onClick={() => {
+              handleModalOpen(profile), setModalOpen(true);
+            }}
             className="btn btn-outline btn-sm"
           >
             Update Profile
@@ -235,18 +196,18 @@ const MyProfile = () => {
                 required
               />
             </div>
+            <div className="form-control w-full">
+              <label className="label">
+                <span className="label-text">Blood Group</span>
+              </label>
+              <Select
+                defaultValue={modalData?.blood}
+                required
+                onChange={setBloodOption}
+                options={bloodOptions}
+              />
+            </div>
             <div className="md:flex gap-5">
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text">Blood Group</span>
-                </label>
-                <Select
-                  defaultValue={modalData?.blood}
-                  required
-                  onChange={setBloodOption}
-                  options={bloodOptions}
-                />
-              </div>
               <div className="form-control w-full">
                 <label className="label">
                   <span className="label-text">Division</span>
@@ -268,6 +229,17 @@ const MyProfile = () => {
                   required
                   onChange={setDistrictOption}
                   options={districtOptions}
+                />
+              </div>
+              <div className="form-control w-full">
+                <label className="label">
+                  <span className="label-text">Upazilla</span>
+                </label>
+                <Select
+                  defaultValue={modalData?.upazilla}
+                  required
+                  onChange={setUpazillaOption}
+                  options={upazillaOptions}
                 />
               </div>
             </div>
@@ -295,7 +267,12 @@ const MyProfile = () => {
             )}
             <div className="form-control mt-4">
               {/* <input type="submit" className="btn" value={` Update Profile`} /> */}
-              <button className="btn" type="submit"><LiaHourglassStartSolid className={`text-lg ${loading? 'animate-spin' : ''}`} /> Update Profile</button>
+              <button className="btn" type="submit">
+                <LiaHourglassStartSolid
+                  className={`text-lg ${loading ? "animate-spin" : ""}`}
+                />{" "}
+                Update Profile
+              </button>
             </div>
           </form>
         </div>

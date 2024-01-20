@@ -3,7 +3,7 @@ import { RiDeleteBin5Line } from "react-icons/ri";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { LiaHourglassStartSolid } from "react-icons/lia";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useAuth from "../../../Hooks/useAuth";
 import toast from "react-hot-toast";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
@@ -11,20 +11,33 @@ import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 const MyDonationRequests = () => {
   const { user } = useAuth();
   const [filterValue, setFilterValue] = useState("all");
+  const [count, setCount] = useState(0);
+  const [itemPerPage, setItemPerPage] = useState(3);
+  const [currentPage, setCurrentPage] = useState(0);
   const axiosSecure = useAxiosSecure();
   const {
     data: recentDonations,
     isPending,
     refetch,
   } = useQuery({
-    queryKey: ["my-donation-requests", filterValue],
+    queryKey: ["my-donation-requests", filterValue, currentPage, itemPerPage],
     queryFn: async () => {
       const { data } = await axiosSecure.get(
-        `/donation_requests/filter/${user?.email}?status=${filterValue}`
+        `/donation_requests/filter/${user?.email}?status=${filterValue}&page=${currentPage}&size=${itemPerPage}`
       );
       return data;
     },
   });
+
+  useEffect(() => {
+    axiosSecure.get(`/itemsCount`).then((res) => {
+      setCount(res.data.myRequestsCount);
+    });
+  }, [axiosSecure, currentPage, itemPerPage]);
+
+  const numberOfPages = Math.ceil(count / itemPerPage);
+
+  const pages = [...Array(numberOfPages).keys()];
 
   const handleDelete = (id) => {
     Swal.fire({
@@ -187,6 +200,23 @@ const MyDonationRequests = () => {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {filterValue === "all" && (
+        <div className=" my-10 flex justify-center">
+          <div className="join">
+            {pages?.map((page) => (
+              <input
+                onClick={() => setCurrentPage(page)}
+                key={page}
+                className="join-item btn btn-square"
+                type="radio"
+                name="options"
+                aria-label={page}
+              />
+            ))}
+          </div>
         </div>
       )}
     </div>

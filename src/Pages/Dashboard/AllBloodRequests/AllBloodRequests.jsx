@@ -1,32 +1,46 @@
 import { useQuery } from "@tanstack/react-query";
 import { LiaHourglassStartSolid } from "react-icons/lia";
 import Swal from "sweetalert2";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import useAdmin from "../../../Hooks/useAdmin";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 import useVolunteer from "../../../Hooks/useVolunteer";
-import toast from "react-hot-toast"; 
+import toast from "react-hot-toast";
 
 const AllBloodRequests = () => {
   const [isAdmin] = useAdmin();
   const [isVolunteer] = useVolunteer();
   const axiosSecure = useAxiosSecure();
   const [filterValue, setFilterValue] = useState("all");
+  const [count, setCount] = useState(0);
+  const [itemPerPage, setItemPerPage] = useState(3);
+  const [currentPage, setCurrentPage] = useState(0);
+
   const {
     data: allRequests,
     isPending,
     refetch,
   } = useQuery({
-    queryKey: ["all-bloodRequests", filterValue],
+    queryKey: ["all-bloodRequests", filterValue, currentPage, itemPerPage],
     queryFn: async () => {
-      const { data } = await axiosSecure.get("/donation_requests/all");
+      const { data } = await axiosSecure.get(
+        `/donation-requests-all?status=${filterValue}&page=${currentPage}&size=${itemPerPage}`
+      );
       return data;
     },
   });
 
-  // console.log(Math.ceil(allRequests?.length/3));
+  useEffect(() => {
+    axiosSecure.get(`/itemsCount`).then((res) => {
+      setCount(res.data.requestsCount);
+    });
+  }, [axiosSecure, currentPage, itemPerPage]);
+
+  const numberOfPages = Math.ceil(count / itemPerPage);
+
+  const pages = [...Array(numberOfPages).keys()];
 
   const handleDelete = (id) => {
     Swal.fire({
@@ -179,6 +193,23 @@ const AllBloodRequests = () => {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {filterValue === "all" && (
+        <div className=" my-10 flex justify-center">
+          <div className="join">
+            {pages?.map((page) => (
+              <input
+                onClick={() => setCurrentPage(page)}
+                key={page}
+                className="join-item btn btn-square"
+                type="radio"
+                name="options"
+                aria-label={page}
+              />
+            ))}
+          </div>
         </div>
       )}
     </div>

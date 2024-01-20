@@ -29,6 +29,14 @@ const Fundings = () => {
               donation can save a whole life.
             </p>
             <div>
+              {/* <div>
+                <label className="label ">Amount</label>
+                <input
+                  type="number"
+                  min="1"
+                  className="input input-bordered border-white rounded-none bg-transparent w-[86%]"
+                />
+              </div> */}
               <CheckoutForm refetch={refetch} />
             </div>
           </div>

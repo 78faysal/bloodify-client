@@ -12,17 +12,20 @@ const CheckoutForm = ({ refetch }) => {
   const [cardError, setCardError] = useState("");
   const [processing, setProcessing] = useState(false);
   const axiosSecure = useAxiosSecure();
+  // const [amount, setAmount] = useState(10);
 
   useEffect(() => {
-    axiosSecure.post("/create-payment-intent", { price: 100 }).then((res) => {
+    axiosSecure.post("/create-payment-intent", { price: 50 }).then((res) => {
       console.log(res.data);
       console.log(res.data.clientSecret);
       setClientSecret(res.data.clientSecret);
     });
-  }, [axiosSecure]);
+  }, [ axiosSecure]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    // setAmount(event.target.amount.value);
 
     if (!stripe || !elements) {
       return;
@@ -98,8 +101,20 @@ const CheckoutForm = ({ refetch }) => {
     }
   };
 
+  // console.log(amount);
+
   return (
     <form onSubmit={handleSubmit} className="card-body mt-5">
+      {/* <div>
+        <input
+          // onChange={setAmount}
+          name="amount"
+          type="number"
+          min="1"
+          placeholder="Amount"
+          className="input input-bordered border-white rounded-none text-white bg-transparent w-full"
+        />
+      </div> */}
       <CardElement
         className="border py-4 px-2"
         options={{

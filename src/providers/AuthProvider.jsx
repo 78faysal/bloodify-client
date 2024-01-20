@@ -44,17 +44,7 @@ const AuthProvider = ({ children }) => {
 
   // update password
   const updatePass = (password) => {
-    // const user = auth.currentUser;
-
-    // // re-authenticate user
-    // const credential = EmailAuthProvider.credential(user.email, currentPassword);
-    // try{
-    //     await user.reauthenticateWithCredential(credential);
     return updatePassword(auth.currentUser, password);
-    // }
-    // catch(err){
-    //     console.log(err);
-    // }
   };
 
   useEffect(() => {

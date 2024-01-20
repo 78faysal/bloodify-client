@@ -118,7 +118,7 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {recentDonations?.map((donation) => (
+                {recentDonations?.slice(0,3).map((donation) => (
                   <tr key={donation?._id}>
                     <th>{donation?.recipient_name}</th>
                     <td>

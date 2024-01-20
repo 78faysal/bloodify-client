@@ -39,10 +39,6 @@ const Routes = createBrowserRouter([
       },
       {
         path: "/donation-requests/:id",
-        loader: ({ params }) =>
-          fetch(
-            `https://bloodify-server.vercel.app/donation_requests/${params.id}`
-          ),
         element: (
           <PrivateRoute>
             <DonationDetails />
@@ -88,7 +84,7 @@ const Routes = createBrowserRouter([
         path: "update-donation-request/:id",
         loader: ({ params }) =>
           fetch(
-            `https://bloodify-server.vercel.app/donation_requests/${params.id}`
+            `http://localhost:5000/donation_requests/${params.id}`
           ),
         element: <UpdateRequestDonation />,
       },
@@ -100,7 +96,7 @@ const Routes = createBrowserRouter([
         path: "donation-request-detail/:id",
         loader: ({ params }) =>
           fetch(
-            `https://bloodify-server.vercel.app/donation_requests/${params.id}`
+            `http://localhost:5000/donation_requests/${params.id}`
           ),
         element: <DonationRequestDetail />,
       },

@@ -1,17 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LiaHourglassStartSolid } from "react-icons/lia";
-import { useLoaderData, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useAuth from "../../Hooks/useAuth";
 import toast from "react-hot-toast";
 import useAxiosSecure from "../../Hooks/useAxiosSecure";
 
 const DonationDetails = () => {
-  const details = useLoaderData();
+  const { id } = useParams();
+  const [details, setDetails] = useState({});
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
   const [modalOpen, setModalOpen] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    axiosSecure.get(`/donation_requests/${id}`).then((res) => {
+      setDetails(res.data);
+    });
+  }, [axiosSecure, id]);
+
+  // console.log(details);
 
   const handleModalOpen = () => {
     document.getElementById("my_modal_3").showModal();
@@ -28,7 +37,7 @@ const DonationDetails = () => {
       status: "inprogress",
     };
     axiosSecure
-      .patch(`/donation_requests/${details?._id}`, formData)
+      .patch(`/donation_request_donor_add/${details?._id}`, formData)
       .then((res) => {
         if (res.data.modifiedCount > 0) {
           setModalOpen(false);

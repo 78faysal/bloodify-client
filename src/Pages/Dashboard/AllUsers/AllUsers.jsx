@@ -1,26 +1,44 @@
 import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 import { LiaHourglassStartSolid } from "react-icons/lia";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useAuth from "../../../Hooks/useAuth";
 import toast from "react-hot-toast";
+// import useAxiosPublic from "../../../Hooks/useAxiosPublic";
 
 const AllUsers = () => {
   const { laoding } = useAuth();
-  const [filterValue, setFilterValue] = useState("active");
   const axiosSecure = useAxiosSecure();
+  const [filterValue, setFilterValue] = useState("all");
+  const [count, setCount] = useState(0);
+  const [itemPerPage, setItemPerPage] = useState(3);
+  const [currentPage, setCurrentPage] = useState(0);
+
   const {
     data: users,
     isPending,
     refetch,
   } = useQuery({
-    queryKey: ["users", filterValue],
+    queryKey: ["users", filterValue, currentPage, itemPerPage],
     enabled: !laoding,
     queryFn: async () => {
-      const { data } = await axiosSecure.get(`/users?status=${filterValue}`);
-      return data;
+      const res = await axiosSecure.get(
+        `/users?status=${filterValue}&page=${currentPage}&size=${itemPerPage}`
+      );
+      return res.data;
     },
   });
+
+  useEffect(() => {
+    axiosSecure.get(`/itemsCount`).then((res) => {
+      setCount(res.data.usersCount);
+    });
+  }, [axiosSecure, currentPage, itemPerPage]);
+
+
+  const numberOfPages = Math.ceil(count / itemPerPage);
+
+  const pages = [...Array(numberOfPages).keys()];
 
   const handleChange = (e) => {
     e.preventDefault();
@@ -95,7 +113,7 @@ const AllUsers = () => {
         value={filterValue}
         name="status"
       >
-        {/* <option defaultChecked aria-readonly value="pending">Filter</option> */}
+        <option value="all">All</option>
         <option value="active">active</option>
         <option value="blocked">blocked</option>
       </select>
@@ -138,7 +156,7 @@ const AllUsers = () => {
                         className={` py-1 rounded-sm ${
                           user?.status === "active"
                             ? "bg-green-200 px-3"
-                            : "bg-red-200"
+                            : "bg-red-200 px-2"
                         }`}
                       >
                         {user?.status}
@@ -181,6 +199,21 @@ const AllUsers = () => {
           </table>
         </div>
       )}
+
+      {filterValue === 'all' && <div className=" my-10 flex justify-center">
+        <div className="join">
+          {pages?.map((page) => (
+            <input
+              onClick={() => setCurrentPage(page)}
+              key={page}
+              className="join-item btn btn-square"
+              type="radio"
+              name="options"
+              aria-label={page}
+            />
+          ))}
+        </div>
+      </div>}
     </div>
   );
 };
