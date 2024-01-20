@@ -84,7 +84,7 @@ const Routes = createBrowserRouter([
         path: "update-donation-request/:id",
         loader: ({ params }) =>
           fetch(
-            `http://localhost:5000/donation_requests/${params.id}`
+            `https://bloodify-server.vercel.app/donation_requests/${params.id}`
           ),
         element: <UpdateRequestDonation />,
       },
@@ -96,7 +96,7 @@ const Routes = createBrowserRouter([
         path: "donation-request-detail/:id",
         loader: ({ params }) =>
           fetch(
-            `http://localhost:5000/donation_requests/${params.id}`
+            `https://bloodify-server.vercel.app/donation_requests/${params.id}`
           ),
         element: <DonationRequestDetail />,
       },
